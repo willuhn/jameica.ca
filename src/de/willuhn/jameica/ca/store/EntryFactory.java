@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/EntryFactory.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/05 16:02:38 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/06 00:27:37 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -23,9 +23,8 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
 import java.security.SecureRandom;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -40,7 +39,7 @@ import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.jce.X509V3CertificateGenerator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import de.willuhn.jameica.ca.store.format.DERFormat;
+import de.willuhn.jameica.ca.store.format.PEMFormat;
 import de.willuhn.jameica.ca.store.format.Format;
 import de.willuhn.jameica.ca.store.template.Attributes;
 import de.willuhn.jameica.ca.store.template.Template;
@@ -56,31 +55,50 @@ public class EntryFactory
    */
   public static enum FORMAT
   {
-    DER
+    PEM
   }
   
   private final static Map<FORMAT,Format> formatMap = new HashMap<FORMAT,Format>();
   
   static
   {
-    formatMap.put(FORMAT.DER,new DERFormat());
+    formatMap.put(FORMAT.PEM,new PEMFormat());
   }
   
   /**
-   * Liest einen Public-Key 
-   * @param file
-   * @return
+   * Liest ein Schluesselpaar ein. 
+   * @param cert Dateiname des Zertifikates.
+   * @param privateKey Dateiname des Private-Keys. Optional.
+   * @return der erzeugte Entry.
    * @throws Exception
    */
-  public static Entry fromPublicKey(File file) throws Exception
+  public static Entry read(File cert, File privateKey, FORMAT format) throws Exception
   {
+    Format f = formatMap.get(format);
+    if (f == null)
+      throw new Exception("format " + format + " unknown");
+
     InputStream is = null;
+
     try
     {
-      is = new BufferedInputStream(new FileInputStream(file));
-      CertificateFactory factory = CertificateFactory.getInstance("X.509");
       Entry e = new Entry();
-      e.setCertificate((X509Certificate)factory.generateCertificate(is));
+
+      // Public Key
+      is = new BufferedInputStream(new FileInputStream(cert));
+      e.setCertificate(f.readCertificate(is));
+      is.close();
+      is = null;
+
+      // Private Key
+      if (privateKey != null)
+      {
+        is = new BufferedInputStream(new FileInputStream(privateKey));
+        e.setPrivateKey(f.readPrivateKey(is));
+        is.close();
+        is = null;
+      }
+
       return e;
     }
     finally
@@ -93,21 +111,36 @@ public class EntryFactory
   /**
    * Exportiert einen Schluessel in die angegebene Datei.
    * @param entry der zu exportierende Schluessel.
-   * @param target die Zieldatei.
+   * @param cert Dateiname fuer das Zertifikate.
+   * @param privateKey Dateiname fuer den Private-Key. Optional.
    * @param format das Dateiformat.
    * @throws Exception
    */
-  public static void export(Entry entry, File target, FORMAT format) throws Exception
+  public static void export(Entry entry, File cert, File privateKey, FORMAT format) throws Exception
   {
+    Format f = formatMap.get(format);
+    if (f == null)
+      throw new Exception("format " + format + " unknown");
+
     OutputStream os = null;
     try
     {
-      os = new BufferedOutputStream(new FileOutputStream(target));
-      Format f = formatMap.get(format);
-      if (f == null)
-        throw new Exception("format " + format + " unknown");
-      
-      f.write(entry,os);
+      os = new BufferedOutputStream(new FileOutputStream(cert));
+      f.writeCertificate(entry.getCertificate(),os);
+      os.close();
+      os = null;
+
+      if (privateKey != null)
+      {
+        PrivateKey key = entry.getPrivateKey();
+        if (key != null)
+        {
+          os = new BufferedOutputStream(new FileOutputStream(privateKey));
+          f.writePrivateKey(key,os);
+          os.close();
+          os = null;
+        }
+      }
     }
     finally
     {
@@ -161,7 +194,7 @@ public class EntryFactory
 
       // Subject
       Hashtable<DERObjectIdentifier, String> props = new Hashtable();
-      Attributes as = template.getSubject();
+      Attributes as = template.getAttributes();
       if (as.CN != null)           props.put(X509Name.CN,           as.CN);
       if (as.GIVENNAME != null)    props.put(X509Name.GIVENNAME,    as.GIVENNAME);
       if (as.O != null)            props.put(X509Name.O,            as.O);
@@ -179,8 +212,6 @@ public class EntryFactory
 
       if (monitor != null) monitor.addPercentComplete(20);
 
-      // TODO Issuer - fehlt da nicht auch noch das Aussteller-Zertifikat?
-      // generator.setIssuerDN(user);
       generator.addExtension(MiscObjectIdentifiers.netscapeCertType,false,
                              new NetscapeCertType(NetscapeCertType.objectSigning | NetscapeCertType.smime));
       // TODO Verwendungszweck
@@ -197,11 +228,22 @@ public class EntryFactory
       
       if (monitor != null) monitor.addPercentComplete(20);
 
-      entry.setCertificate(generator.generateX509Certificate(entry.getPrivateKey()));
-
-      // Private-Key der CA angeben, wenn sie von der signiert sein soll.
-      // X509Certificate cert = generator.generateX509Certificate(caPrivKey);
-      //
+      // Aussteller
+      PrivateKey key = null;
+      
+      Entry issuer = template.getIssuer();
+      if (issuer == null)
+      {
+        if (monitor != null) monitor.setStatusText("creating self signed certificate");
+        generator.setIssuerDN(new X509Name(props));
+        key = entry.getPrivateKey();
+      }
+      else
+      {
+        if (monitor != null) monitor.setStatusText("creating ca signed certificate");
+        key = issuer.getPrivateKey();
+      }
+      entry.setCertificate(generator.generateX509Certificate(key));
       ////////////////////////////////////////////////////////////////////////////
 
       if (monitor != null)
@@ -230,6 +272,9 @@ public class EntryFactory
 
 /**********************************************************************
  * $Log: EntryFactory.java,v $
+ * Revision 1.2  2009/10/06 00:27:37  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.1  2009/10/05 16:02:38  willuhn
  * @N Neues Jameica-Plugin: "jameica.ca" - ein Certifcate-Authority-Tool zum Erstellen und Verwalten von SSL-Zertifikaten
  *
