@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Store.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/05 16:02:38 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/06 16:36:00 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -65,7 +65,7 @@ public class Store
       }
       
       this.keystore = KeyStore.getInstance("JKS");
-      this.keystore.load(is,this.callback.getStorePassword());
+      this.keystore.load(is,this.callback.getPassword(file));
     }
     finally
     {
@@ -169,7 +169,7 @@ public class Store
     {
       Logger.info("storing keystore " + file);
       os = new BufferedOutputStream(new FileOutputStream(file));
-      this.keystore.store(os,this.callback.getStorePassword());
+      this.keystore.store(os,this.callback.getPassword(file));
     }
     finally
     {
@@ -208,6 +208,10 @@ public class Store
 
 /**********************************************************************
  * $Log: Store.java,v $
+ * Revision 1.2  2009/10/06 16:36:00  willuhn
+ * @N Extensions
+ * @N PEM-Writer
+ *
  * Revision 1.1  2009/10/05 16:02:38  willuhn
  * @N Neues Jameica-Plugin: "jameica.ca" - ein Certifcate-Authority-Tool zum Erstellen und Verwalten von SSL-Zertifikaten
  *

@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/service/impl/StoreServiceImpl.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/05 16:02:38 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/06 16:36:00 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -104,18 +104,11 @@ public class StoreServiceImpl implements StoreService
       this.store = new Store(file,new Callback()
       {
         /**
-         * @see de.willuhn.jameica.ca.store.Callback#getStorePassword()
+         * @see de.willuhn.jameica.ca.store.Callback#getPassword(java.lang.Object)
          */
-        public char[] getStorePassword() throws Exception
+        public char[] getPassword(Object context) throws Exception
         {
           return Application.getCallback().getPassword().toCharArray();
-        }
-        /**
-         * @see de.willuhn.jameica.ca.store.Callback#getPassword(de.willuhn.jameica.ca.store.Entry)
-         */
-        public char[] getPassword(Entry entry) throws Exception
-        {
-          return getStorePassword();
         }
       });
     }
@@ -144,6 +137,10 @@ public class StoreServiceImpl implements StoreService
 
 /**********************************************************************
  * $Log: StoreServiceImpl.java,v $
+ * Revision 1.2  2009/10/06 16:36:00  willuhn
+ * @N Extensions
+ * @N PEM-Writer
+ *
  * Revision 1.1  2009/10/05 16:02:38  willuhn
  * @N Neues Jameica-Plugin: "jameica.ca" - ein Certifcate-Authority-Tool zum Erstellen und Verwalten von SSL-Zertifikaten
  *

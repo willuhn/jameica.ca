@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/format/PEMFormat.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/06 00:27:37 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/06 16:36:00 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -16,14 +16,17 @@ package de.willuhn.jameica.ca.store.format;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMReader;
+import org.bouncycastle.openssl.PEMWriter;
 import org.bouncycastle.openssl.PasswordFinder;
+
+import de.willuhn.jameica.ca.store.Callback;
 
 /**
  * Implementierung des PEM-Format.
@@ -41,19 +44,25 @@ public class PEMFormat implements Format
   }
 
   /**
-   * @see de.willuhn.jameica.ca.store.format.Format#readPrivateKey(java.io.InputStream)
+   * @see de.willuhn.jameica.ca.store.format.Format#readPrivateKey(java.io.InputStream, de.willuhn.jameica.ca.store.Callback)
    */
-  public PrivateKey readPrivateKey(InputStream is) throws Exception
+  public PrivateKey readPrivateKey(InputStream is, final Callback callback) throws Exception
   {
-    // TODO: Sollte irgendwo an zentraler Stelle NUR EINMAL gemacht werden
-    java.security.Security.addProvider(new BouncyCastleProvider());
-    
     PEMReader reader = new PEMReader(new InputStreamReader(is),new PasswordFinder()
     {
-      // TODO Passwort
+      /**
+       * @see org.bouncycastle.openssl.PasswordFinder#getPassword()
+       */
       public char[] getPassword()
       {
-        return new char[0];
+        try
+        {
+          return callback.getPassword(null); // TODO Contextobjekt fehlt - eigentlich sollte das ein Fileobjekt sein
+        }
+        catch (Exception e)
+        {
+          throw new RuntimeException(e);
+        }
       }
     });
     KeyPair pair = (KeyPair) reader.readObject();
@@ -65,8 +74,9 @@ public class PEMFormat implements Format
    */
   public void writeCertificate(X509Certificate cert, OutputStream os) throws Exception
   {
-    // TODO: Das ist DER-Format und nicht PEM
-    os.write(cert.getEncoded());
+    PEMWriter writer = new PEMWriter(new OutputStreamWriter(os));
+    writer.writeObject(cert);
+    writer.flush();
   }
 
   /**
@@ -74,8 +84,9 @@ public class PEMFormat implements Format
    */
   public void writePrivateKey(PrivateKey key, OutputStream os) throws Exception
   {
-    // TODO: Das ist DER-Format und nicht PEM
-    os.write(key.getEncoded());
+    PEMWriter writer = new PEMWriter(new OutputStreamWriter(os));
+    writer.writeObject(key);
+    writer.flush();
   }
 
 }
@@ -83,6 +94,10 @@ public class PEMFormat implements Format
 
 /**********************************************************************
  * $Log: PEMFormat.java,v $
+ * Revision 1.2  2009/10/06 16:36:00  willuhn
+ * @N Extensions
+ * @N PEM-Writer
+ *
  * Revision 1.1  2009/10/06 00:27:37  willuhn
  * *** empty log message ***
  *

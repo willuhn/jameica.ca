@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/EntryFactory.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/06 00:27:37 $
+ * $Revision: 1.3 $
+ * $Date: 2009/10/06 16:36:00 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -24,32 +24,36 @@ import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.SecureRandom;
+import java.security.Security;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.bouncycastle.asn1.DERObjectIdentifier;
-import org.bouncycastle.asn1.misc.MiscObjectIdentifiers;
-import org.bouncycastle.asn1.misc.NetscapeCertType;
-import org.bouncycastle.asn1.x509.KeyUsage;
-import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.asn1.x509.X509Name;
-import org.bouncycastle.jce.X509V3CertificateGenerator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.x509.X509V3CertificateGenerator;
 
-import de.willuhn.jameica.ca.store.format.PEMFormat;
 import de.willuhn.jameica.ca.store.format.Format;
-import de.willuhn.jameica.ca.store.template.Attributes;
+import de.willuhn.jameica.ca.store.format.PEMFormat;
+import de.willuhn.jameica.ca.store.template.Attribute;
+import de.willuhn.jameica.ca.store.template.Extension;
 import de.willuhn.jameica.ca.store.template.Template;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ProgressMonitor;
 
 /**
- * Hilfsklasse mit statischen Funktionen zum Erzeugen, Lesen und Schreiben von Schluesseln.
+ * Factory zum Erzeugen, Lesen und Schreiben von Schluesseln.
  */
 public class EntryFactory
 {
+  private Callback callback = null;
+  
   /**
    * Schluesselformat.
    */
@@ -63,6 +67,23 @@ public class EntryFactory
   static
   {
     formatMap.put(FORMAT.PEM,new PEMFormat());
+    
+    if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null)
+    {
+      Provider p = new BouncyCastleProvider();
+      Logger.info("applying security provider " + p.getInfo());
+      Security.addProvider(p);
+    }
+
+  }
+  
+  /**
+   * ct.
+   * @param callback der Callback fuer Passwort-Rueckfragen.
+   */
+  public EntryFactory(Callback callback)
+  {
+    this.callback = callback;
   }
   
   /**
@@ -72,7 +93,7 @@ public class EntryFactory
    * @return der erzeugte Entry.
    * @throws Exception
    */
-  public static Entry read(File cert, File privateKey, FORMAT format) throws Exception
+  public Entry read(File cert, File privateKey, FORMAT format) throws Exception
   {
     Format f = formatMap.get(format);
     if (f == null)
@@ -94,7 +115,7 @@ public class EntryFactory
       if (privateKey != null)
       {
         is = new BufferedInputStream(new FileInputStream(privateKey));
-        e.setPrivateKey(f.readPrivateKey(is));
+        e.setPrivateKey(f.readPrivateKey(is, this.callback));
         is.close();
         is = null;
       }
@@ -109,14 +130,14 @@ public class EntryFactory
   }
   
   /**
-   * Exportiert einen Schluessel in die angegebene Datei.
+   * Schreibt einen Schluessel in die angegebenen Dateien.
    * @param entry der zu exportierende Schluessel.
    * @param cert Dateiname fuer das Zertifikate.
    * @param privateKey Dateiname fuer den Private-Key. Optional.
    * @param format das Dateiformat.
    * @throws Exception
    */
-  public static void export(Entry entry, File cert, File privateKey, FORMAT format) throws Exception
+  public void write(Entry entry, File cert, File privateKey, FORMAT format) throws Exception
   {
     Format f = formatMap.get(format);
     if (f == null)
@@ -156,7 +177,7 @@ public class EntryFactory
    * @return der erstellte Schluessel.
    * @throws Exception
    */
-  public static Entry create(Template template, ProgressMonitor monitor) throws Exception
+  public Entry create(Template template, ProgressMonitor monitor) throws Exception
   {
     if (monitor != null) monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
 
@@ -194,14 +215,15 @@ public class EntryFactory
 
       // Subject
       Hashtable<DERObjectIdentifier, String> props = new Hashtable();
-      Attributes as = template.getAttributes();
-      if (as.CN != null)           props.put(X509Name.CN,           as.CN);
-      if (as.GIVENNAME != null)    props.put(X509Name.GIVENNAME,    as.GIVENNAME);
-      if (as.O != null)            props.put(X509Name.O,            as.O);
-      if (as.OU != null)           props.put(X509Name.OU,           as.OU);
-      if (as.SURNAME != null)      props.put(X509Name.SURNAME,      as.SURNAME);
-      if (as.EmailAddress != null) props.put(X509Name.EmailAddress, as.EmailAddress);
-      generator.setSubjectDN(new X509Name(props));
+      Vector<DERObjectIdentifier> order = new Vector<DERObjectIdentifier>();
+      List<Attribute> attributes = template.getAttributes();
+      for (Attribute a:attributes)
+      {
+        DERObjectIdentifier oid = new DERObjectIdentifier(a.getOid());
+        props.put(oid,a.getValue());
+        order.add(oid);
+      }
+      generator.setSubjectDN(new X509Name(order,props));
 
       // Seriennummer
       byte[] serno = new byte[8];
@@ -212,19 +234,11 @@ public class EntryFactory
 
       if (monitor != null) monitor.addPercentComplete(20);
 
-      generator.addExtension(MiscObjectIdentifiers.netscapeCertType,false,
-                             new NetscapeCertType(NetscapeCertType.objectSigning | NetscapeCertType.smime));
-      // TODO Verwendungszweck
-      generator.addExtension(X509Extensions.KeyUsage, true,
-          new KeyUsage(KeyUsage.digitalSignature |
-                       KeyUsage.keyAgreement | 
-                       KeyUsage.keyEncipherment | 
-                       KeyUsage.nonRepudiation |
-                       KeyUsage.dataEncipherment |
-                       KeyUsage.keyCertSign |
-                       KeyUsage.cRLSign
-                      )
-      );
+      List<Extension> extensions = template.getExtensions();
+      for (Extension e:extensions)
+      {
+        generator.addExtension(e.getOid(),e.isCritical(),e.getValue());
+      }
       
       if (monitor != null) monitor.addPercentComplete(20);
 
@@ -235,7 +249,7 @@ public class EntryFactory
       if (issuer == null)
       {
         if (monitor != null) monitor.setStatusText("creating self signed certificate");
-        generator.setIssuerDN(new X509Name(props));
+        generator.setIssuerDN(new X509Name(order,props));
         key = entry.getPrivateKey();
       }
       else
@@ -243,7 +257,7 @@ public class EntryFactory
         if (monitor != null) monitor.setStatusText("creating ca signed certificate");
         key = issuer.getPrivateKey();
       }
-      entry.setCertificate(generator.generateX509Certificate(key));
+      entry.setCertificate(generator.generate(key));
       ////////////////////////////////////////////////////////////////////////////
 
       if (monitor != null)
@@ -272,6 +286,10 @@ public class EntryFactory
 
 /**********************************************************************
  * $Log: EntryFactory.java,v $
+ * Revision 1.3  2009/10/06 16:36:00  willuhn
+ * @N Extensions
+ * @N PEM-Writer
+ *
  * Revision 1.2  2009/10/06 00:27:37  willuhn
  * *** empty log message ***
  *

@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/Attic/Test.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/06 00:27:37 $
+ * $Revision: 1.3 $
+ * $Date: 2009/10/06 16:36:00 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -18,9 +18,8 @@ import java.io.File;
 import de.willuhn.jameica.ca.store.Callback;
 import de.willuhn.jameica.ca.store.Entry;
 import de.willuhn.jameica.ca.store.EntryFactory;
-import de.willuhn.jameica.ca.store.Store;
 import de.willuhn.jameica.ca.store.EntryFactory.FORMAT;
-import de.willuhn.logging.Logger;
+import de.willuhn.jameica.ca.store.template.WebserverTemplate;
 
 
 /**
@@ -30,29 +29,33 @@ public class Test
 {
   public static void main(String[] args) throws Exception
   {
-    Store store = new Store(new File("/tmp/install/test.keystore"),new Callback()
+    Callback cb = new Callback()
     {
-      public char[] getStorePassword() throws Exception
+      /**
+       * @see de.willuhn.jameica.ca.store.Callback#getPassword(java.lang.Object)
+       */
+      public char[] getPassword(Object context) throws Exception
       {
-        return "test".toCharArray();
+        return "".toCharArray();
       }
-      public char[] getPassword(Entry entry) throws Exception
-      {
-        return getStorePassword();
-      }
-    });
-
-    Entry e = EntryFactory.read(new File("/tmp/install/ca.crt"),new File("/tmp/install/ca.key"),FORMAT.PEM);
-    store.store(e);
+    };
     
-    EntryFactory.export(e,new File("/tmp/install/ca2.crt"),new File("/tmp/install/ca2.key"),FORMAT.PEM);
-    Logger.flush();
+    EntryFactory ef = new EntryFactory(cb);
+    
+    WebserverTemplate template = new WebserverTemplate();
+    template.setHostname("www.willuhn.de");
+    Entry e = ef.create(template,null);
+    ef.write(e,new File("/tmp/install/server.crt"),new File("/tmp/install/server.key"),FORMAT.PEM);
   }
 }
 
 
 /**********************************************************************
  * $Log: Test.java,v $
+ * Revision 1.3  2009/10/06 16:36:00  willuhn
+ * @N Extensions
+ * @N PEM-Writer
+ *
  * Revision 1.2  2009/10/06 00:27:37  willuhn
  * *** empty log message ***
  *
