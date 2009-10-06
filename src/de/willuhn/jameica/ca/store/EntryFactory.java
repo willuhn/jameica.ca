@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/EntryFactory.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/06 16:36:00 $
+ * $Revision: 1.4 $
+ * $Date: 2009/10/06 16:47:58 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -188,7 +188,8 @@ public class EntryFactory
       ////////////////////////////////////////////////////////////////////////////
       // Schluesselpaar erstellen
       if (monitor != null) monitor.setStatusText("creating key pair");
-
+      Logger.info("creating key pair");
+      
       KeyPairGenerator kp = KeyPairGenerator.getInstance("RSA",BouncyCastleProvider.PROVIDER_NAME);
       kp.initialize(template.getKeySize());
       KeyPair keypair = kp.generateKeyPair();
@@ -202,6 +203,7 @@ public class EntryFactory
       ////////////////////////////////////////////////////////////////////////////
       // Zertifikat erstellen
       if (monitor != null) monitor.setStatusText("creating subject certificate");
+      Logger.info("creating certificate");
 
       X509V3CertificateGenerator generator = new X509V3CertificateGenerator();
       generator.setPublicKey(keypair.getPublic());
@@ -255,6 +257,7 @@ public class EntryFactory
       else
       {
         if (monitor != null) monitor.setStatusText("creating ca signed certificate");
+        generator.setIssuerDN(issuer.getCertificate().getSubjectX500Principal());
         key = issuer.getPrivateKey();
       }
       entry.setCertificate(generator.generate(key));
@@ -286,6 +289,9 @@ public class EntryFactory
 
 /**********************************************************************
  * $Log: EntryFactory.java,v $
+ * Revision 1.4  2009/10/06 16:47:58  willuhn
+ * @N Aussteller fehlte
+ *
  * Revision 1.3  2009/10/06 16:36:00  willuhn
  * @N Extensions
  * @N PEM-Writer
