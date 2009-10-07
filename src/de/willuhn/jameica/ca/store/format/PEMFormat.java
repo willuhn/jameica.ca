@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/format/PEMFormat.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/06 16:36:00 $
+ * $Revision: 1.3 $
+ * $Date: 2009/10/07 11:47:59 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -19,17 +19,14 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.security.KeyPair;
 import java.security.PrivateKey;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 import org.bouncycastle.openssl.PEMReader;
 import org.bouncycastle.openssl.PEMWriter;
 import org.bouncycastle.openssl.PasswordFinder;
 
-import de.willuhn.jameica.ca.store.Callback;
-
 /**
- * Implementierung des PEM-Format.
+ * Implementierung des PEM-Format (Base64).
  */
 public class PEMFormat implements Format
 {
@@ -38,15 +35,14 @@ public class PEMFormat implements Format
    */
   public X509Certificate readCertificate(InputStream is) throws Exception
   {
-    // Mal auf PEMReader umstellen
-    CertificateFactory factory = CertificateFactory.getInstance("X.509");
-    return (X509Certificate) factory.generateCertificate(is);
+    PEMReader reader = new PEMReader(new InputStreamReader(is));
+    return (X509Certificate) reader.readObject();
   }
 
   /**
-   * @see de.willuhn.jameica.ca.store.format.Format#readPrivateKey(java.io.InputStream, de.willuhn.jameica.ca.store.Callback)
+   * @see de.willuhn.jameica.ca.store.format.Format#readPrivateKey(java.io.InputStream, char[])
    */
-  public PrivateKey readPrivateKey(InputStream is, final Callback callback) throws Exception
+  public PrivateKey readPrivateKey(InputStream is, final char[] password) throws Exception
   {
     PEMReader reader = new PEMReader(new InputStreamReader(is),new PasswordFinder()
     {
@@ -57,7 +53,7 @@ public class PEMFormat implements Format
       {
         try
         {
-          return callback.getPassword(null); // TODO Contextobjekt fehlt - eigentlich sollte das ein Fileobjekt sein
+          return password;
         }
         catch (Exception e)
         {
@@ -89,11 +85,22 @@ public class PEMFormat implements Format
     writer.flush();
   }
 
+  /**
+   * @see de.willuhn.jameica.ca.store.format.Format#getName()
+   */
+  public String getName()
+  {
+    return "PEM-Format (Base64)";
+  }
+
 }
 
 
 /**********************************************************************
  * $Log: PEMFormat.java,v $
+ * Revision 1.3  2009/10/07 11:47:59  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.2  2009/10/06 16:36:00  willuhn
  * @N Extensions
  * @N PEM-Writer

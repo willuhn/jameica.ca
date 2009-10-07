@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/format/Format.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/06 16:36:00 $
+ * $Revision: 1.4 $
+ * $Date: 2009/10/07 11:47:59 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -17,8 +17,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-
-import de.willuhn.jameica.ca.store.Callback;
 
 /**
  * Interface fuer Schluesselformate.
@@ -52,16 +50,25 @@ public interface Format
   /**
    * Liest einen Private-Key ein.
    * @param is InputStream mit dem Private-Key.
-   * @param callback Callback fuer die Passwort-Abfrage.
+   * @param password das Passwort.
    * @return der eingelesene Private-Key.
    * @throws Exception
    */
-  public PrivateKey readPrivateKey(InputStream is, Callback callback) throws Exception;
+  public PrivateKey readPrivateKey(InputStream is, char[] password) throws Exception;
+  
+  /**
+   * Liefert einen sprechenden Namen fuer das Format.
+   * @return sprechender Name fuer das Format.
+   */
+  public String getName();
 }
 
 
 /**********************************************************************
  * $Log: Format.java,v $
+ * Revision 1.4  2009/10/07 11:47:59  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.3  2009/10/06 16:36:00  willuhn
  * @N Extensions
  * @N PEM-Writer

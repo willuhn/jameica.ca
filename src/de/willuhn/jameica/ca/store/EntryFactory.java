@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/EntryFactory.java,v $
- * $Revision: 1.5 $
- * $Date: 2009/10/07 11:39:28 $
+ * $Revision: 1.6 $
+ * $Date: 2009/10/07 11:47:59 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -46,6 +46,7 @@ import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 
+import de.willuhn.jameica.ca.store.format.DERFormat;
 import de.willuhn.jameica.ca.store.format.Format;
 import de.willuhn.jameica.ca.store.format.PEMFormat;
 import de.willuhn.jameica.ca.store.template.Attribute;
@@ -66,7 +67,8 @@ public class EntryFactory
    */
   public static enum FORMAT
   {
-    PEM
+    PEM,
+    DER
   }
   
   private final static Map<FORMAT,Format> formatMap = new HashMap<FORMAT,Format>();
@@ -74,6 +76,7 @@ public class EntryFactory
   static
   {
     formatMap.put(FORMAT.PEM,new PEMFormat());
+    formatMap.put(FORMAT.DER,new DERFormat());
     
     if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null)
     {
@@ -122,7 +125,8 @@ public class EntryFactory
       if (privateKey != null)
       {
         is = new BufferedInputStream(new FileInputStream(privateKey));
-        e.setPrivateKey(f.readPrivateKey(is, this.callback));
+        char[] password = this.callback.getPassword(privateKey);
+        e.setPrivateKey(f.readPrivateKey(is,password));
         is.close();
         is = null;
       }
@@ -350,6 +354,9 @@ public class EntryFactory
 
 /**********************************************************************
  * $Log: EntryFactory.java,v $
+ * Revision 1.6  2009/10/07 11:47:59  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.5  2009/10/07 11:39:28  willuhn
  * *** empty log message ***
  *
