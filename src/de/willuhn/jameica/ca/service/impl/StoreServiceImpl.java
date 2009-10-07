@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/service/impl/StoreServiceImpl.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/06 16:36:00 $
+ * $Revision: 1.3 $
+ * $Date: 2009/10/07 12:24:04 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -15,12 +15,10 @@ package de.willuhn.jameica.ca.service.impl;
 
 import java.io.File;
 import java.rmi.RemoteException;
-import java.util.List;
 
 import de.willuhn.jameica.ca.Plugin;
 import de.willuhn.jameica.ca.service.StoreService;
 import de.willuhn.jameica.ca.store.Callback;
-import de.willuhn.jameica.ca.store.Entry;
 import de.willuhn.jameica.ca.store.Store;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
@@ -33,33 +31,11 @@ public class StoreServiceImpl implements StoreService
   private Store store = null;
 
   /**
-   * @see de.willuhn.jameica.ca.service.StoreService#getEntries()
+   * @see de.willuhn.jameica.ca.service.StoreService#getStore()
    */
-  public List<Entry> getEntries() throws RemoteException
+  public Store getStore()
   {
-    try
-    {
-      return this.store.getEntries();
-    }
-    catch (Exception e)
-    {
-      throw new RemoteException("unable to load entries from keystore",e);
-    }
-  }
-
-  /**
-   * @see de.willuhn.jameica.ca.service.StoreService#store(de.willuhn.jameica.ca.store.Entry)
-   */
-  public void store(Entry entry) throws RemoteException
-  {
-    try
-    {
-      this.store.store(entry);
-    }
-    catch (Exception re)
-    {
-      throw new RemoteException("unable to store certificate",re);
-    }
+    return this.store;
   }
 
   /**
@@ -67,7 +43,7 @@ public class StoreServiceImpl implements StoreService
    */
   public String getName() throws RemoteException
   {
-    return "keystore";
+    return "Keystore service";
   }
 
   /**
@@ -137,6 +113,9 @@ public class StoreServiceImpl implements StoreService
 
 /**********************************************************************
  * $Log: StoreServiceImpl.java,v $
+ * Revision 1.3  2009/10/07 12:24:04  willuhn
+ * @N Erster GUI-Code
+ *
  * Revision 1.2  2009/10/06 16:36:00  willuhn
  * @N Extensions
  * @N PEM-Writer

@@ -18,12 +18,14 @@
     <include>.*\.class</include>
   </classfinder>
 
-  <menu />
-  <navigation />
+  <navigation>
+    <item id="jameica.ca.navi.entrylist" name="Zertifikate" action="de.willuhn.jameica.ca.gui.action.EntryList" />
+  </navigation>
+  
   <services>
-  <service name="store" autostart="true" class="de.willuhn.jameica.ca.service.StoreService" />
+    <service name="store" autostart="true" class="de.willuhn.jameica.ca.service.StoreService" />
   </services>
-  <extensions />
+  
 </plugin>
 
 
