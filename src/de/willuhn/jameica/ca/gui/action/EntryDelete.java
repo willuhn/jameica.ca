@@ -1,6 +1,6 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/action/EntryImport.java,v $
- * $Revision: 1.2 $
+ * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/action/EntryDelete.java,v $
+ * $Revision: 1.1 $
  * $Date: 2009/10/07 17:09:11 $
  * $Author: willuhn $
  * $Locker:  $
@@ -14,7 +14,6 @@
 package de.willuhn.jameica.ca.gui.action;
 
 import de.willuhn.jameica.ca.Plugin;
-import de.willuhn.jameica.ca.gui.dialogs.EntryImportDialog;
 import de.willuhn.jameica.ca.service.StoreService;
 import de.willuhn.jameica.ca.store.Entry;
 import de.willuhn.jameica.gui.Action;
@@ -27,9 +26,9 @@ import de.willuhn.util.ApplicationException;
 import de.willuhn.util.I18N;
 
 /**
- * Aktion zum Importieren eines Schluesselpaares.
+ * Loescht einen Entry aus dem Keystore.
  */
-public class EntryImport implements Action
+public class EntryDelete implements Action
 {
   private final static I18N i18n = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getI18N();
 
@@ -38,15 +37,20 @@ public class EntryImport implements Action
    */
   public void handleAction(Object context) throws ApplicationException
   {
+    if (context == null || !(context instanceof Entry))
+      return;
+
+    Entry e = (Entry) context;
     try
     {
-      EntryImportDialog d = new EntryImportDialog(EntryImportDialog.POSITION_CENTER);
-      Entry e = (Entry) d.open();
+      if (!Application.getCallback().askUser(i18n.tr("Möchten Sie diesen Schlüssel wirklich löschen?")))
+        return;
+      
       StoreService service = (StoreService) Application.getServiceFactory().lookup(Plugin.class,"store");
-      service.getStore().store(e);
+      service.getStore().delete(e);
 
-      Application.getMessagingFactory().getMessagingQueue("jameica.ca.entry.import").sendMessage(new QueryMessage(e));
-      Application.getMessagingFactory().sendMessage(new StatusBarMessage(i18n.tr("Schlüssel importiert"),StatusBarMessage.TYPE_SUCCESS));
+      Application.getMessagingFactory().getMessagingQueue("jameica.ca.entry.delete").sendMessage(new QueryMessage(e));
+      Application.getMessagingFactory().sendMessage(new StatusBarMessage(i18n.tr("Schlüssel gelöscht"),StatusBarMessage.TYPE_SUCCESS));
     }
     catch (OperationCanceledException oce)
     {
@@ -56,22 +60,20 @@ public class EntryImport implements Action
     {
       throw ae;
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      Logger.error("error while importing key",e);
-      throw new ApplicationException(i18n.tr("Fehler beim Import des Schlüssels"),e);
+      Logger.error("error while deleting key",ex);
+      throw new ApplicationException(i18n.tr("Fehler beim Löschen des Schlüssels"),ex);
     }
+
   }
 
 }
 
 
 /**********************************************************************
- * $Log: EntryImport.java,v $
- * Revision 1.2  2009/10/07 17:09:11  willuhn
+ * $Log: EntryDelete.java,v $
+ * Revision 1.1  2009/10/07 17:09:11  willuhn
  * @N Schluessel loeschen
- *
- * Revision 1.1  2009/10/07 16:38:59  willuhn
- * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
  *
  **********************************************************************/

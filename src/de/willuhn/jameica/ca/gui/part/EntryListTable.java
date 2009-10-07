@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/part/EntryListTable.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/07 16:38:59 $
+ * $Revision: 1.3 $
+ * $Date: 2009/10/07 17:09:11 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -107,6 +107,7 @@ public class EntryListTable extends TablePart
   public synchronized void paint(Composite parent) throws RemoteException
   {
     final MessageConsumer mc = new MyMessageConsumer();
+    // TODO: Messageconsumer fuer jameica.ca.entry.delete fehlt noch
     Application.getMessagingFactory().getMessagingQueue("jameica.ca.entry.import").registerMessageConsumer(mc);
     parent.addDisposeListener(new DisposeListener() {
       public void widgetDisposed(DisposeEvent e)
@@ -175,6 +176,9 @@ public class EntryListTable extends TablePart
 
 /**********************************************************************
  * $Log: EntryListTable.java,v $
+ * Revision 1.3  2009/10/07 17:09:11  willuhn
+ * @N Schluessel loeschen
+ *
  * Revision 1.2  2009/10/07 16:38:59  willuhn
  * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
  *

@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Store.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/07 16:38:59 $
+ * $Revision: 1.4 $
+ * $Date: 2009/10/07 17:09:11 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -20,7 +20,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.rmi.RemoteException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -86,6 +85,25 @@ public class Store
   }
   
   /**
+   * Loescht einen Schluessel aus dem Keystore.
+   * @param entry der zu loeschende Schluessel.
+   * @throws Exception
+   */
+  public synchronized void delete(Entry entry) throws Exception
+  {
+    X509Certificate cert = entry.getCertificate();
+    if (cert == null)
+      throw new Exception("entry contains no certificate");
+
+    String name = entry.getAlias();
+    if (name == null)
+      name = cert.getSubjectDN().getName();
+    this.keystore.deleteEntry(name);
+    this.store();
+    Logger.info("deleted entry " + name);
+  }
+  
+  /**
    * Speichert einen Eintrag im Keystore.
    * @param entry der zu speichernde Eintrag.
    * @throws Exception
@@ -100,30 +118,23 @@ public class Store
     if (name == null)
       name = cert.getSubjectDN().getName();
 
-    try
+    PrivateKey key = entry.getPrivateKey();
+    if (key == null)
     {
-      PrivateKey key = entry.getPrivateKey();
-      if (key == null)
-      {
-        // Entry enthaelt keinen Private-Key. Wir speichern nur das Zertifikat
-        this.keystore.setCertificateEntry(name,cert);
-        Logger.info("storing certificate " + name);
-      }
-      else
-      {
-        // Wir speichern beides als Bundle.
-        this.keystore.setKeyEntry(name,key,this.callback.getPassword(entry),new X509Certificate[]{cert});
-        Logger.info("storing certificate+key " + name);
-      }
-      
+      // Entry enthaelt keinen Private-Key. Wir speichern nur das Zertifikat
+      this.keystore.setCertificateEntry(name,cert);
+      Logger.info("storing certificate " + name);
+    }
+    else
+    {
+      // Wir speichern beides als Bundle.
+      this.keystore.setKeyEntry(name,key,this.callback.getPassword(entry),new X509Certificate[]{cert});
+      Logger.info("storing certificate+key " + name);
+    }
+    
 
-      // Wir schreiben die Aenderungen sofort weg
-      this.store();
-    }
-    catch (Exception re)
-    {
-      throw new RemoteException("unable to store certificate",re);
-    }
+    // Wir schreiben die Aenderungen sofort weg
+    this.store();
   }
 
   
@@ -136,27 +147,20 @@ public class Store
   {
     List<Entry> list = new ArrayList<Entry>();
 
-    try
+    Enumeration<String> e = this.keystore.aliases();
+    while (e.hasMoreElements())
     {
-      Enumeration<String> e = this.keystore.aliases();
-      while (e.hasMoreElements())
-      {
-        String alias = e.nextElement();
-        
-        Entry entry = new Entry(this);
-        entry.setAlias(alias);
-        
-        if (this.keystore.containsAlias(alias))
-          entry.setCertificate((X509Certificate) this.keystore.getCertificate(alias));
+      String alias = e.nextElement();
+      
+      Entry entry = new Entry(this);
+      entry.setAlias(alias);
+      
+      if (this.keystore.containsAlias(alias))
+        entry.setCertificate((X509Certificate) this.keystore.getCertificate(alias));
 
-        list.add(entry);
-      }
-      return list;
+      list.add(entry);
     }
-    catch (Exception e)
-    {
-      throw new RemoteException("unable to load entries from keystore",e);
-    }
+    return list;
   }
   
   /**
@@ -222,6 +226,9 @@ public class Store
 
 /**********************************************************************
  * $Log: Store.java,v $
+ * Revision 1.4  2009/10/07 17:09:11  willuhn
+ * @N Schluessel loeschen
+ *
  * Revision 1.3  2009/10/07 16:38:59  willuhn
  * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
  *
