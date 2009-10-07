@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/template/Attribute.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/06 16:36:00 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/07 11:39:27 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -23,35 +23,50 @@ import org.bouncycastle.asn1.x509.X509Name;
 public class Attribute implements Serializable
 {
   /**
-   * Template-Attribute fuer: Common-Name (CN).
+   * OID fuer: Common-Name (CN).
    */
-  public final static Attribute CN = new Attribute(X509Name.CN.getId(),null);
+  public final static String CN = X509Name.CN.getId();
   
   /**
-   * Template-Attribute fuer: Organisation (O).
+   * OID fuer: Organisation (O).
    */
-  public final static Attribute O  = new Attribute(X509Name.O.getId(),null);
+  public final static String O  = X509Name.O.getId();
   
   /**
-   * Template-Attribute fuer: Organizational Unit (OU).
+   * OID fuer: Organizational Unit (OU).
    */
-  public final static Attribute OU = new Attribute(X509Name.OU.getId(),null);
+  public final static String OU = X509Name.OU.getId();
 
   /**
-   * Template-Attribute fuer: Vorname (GIVENNAME).
+   * OID fuer: Vorname (GIVENNAME).
    */
-  public final static Attribute GIVENNAME = new Attribute(X509Name.GIVENNAME.getId(),null);
+  public final static String GIVENNAME = X509Name.GIVENNAME.getId();
   
   /**
-   * Template-Attribute fuer: Nachname (SURNAME).
+   * OID fuer: Nachname (SURNAME).
    */
-  public final static Attribute SURNAME = new Attribute(X509Name.SURNAME.getId(),null);
+  public final static String SURNAME = X509Name.SURNAME.getId();
   
   /**
-   * Template-Attribute fuer: Mail-Adresse (EmailAddress).
+   * OID fuer: Mail-Adresse (EmailAddress).
    */
-  public final static Attribute EmailAddress = new Attribute(X509Name.EmailAddress.getId(),null);
+  public final static String EmailAddress = X509Name.EmailAddress.getId();
   
+  /**
+   * OID fuer: Country (C).
+   */
+  public final static String C = X509Name.C.getId();
+
+  /**
+   * OID fuer: State or Province (ST).
+   */
+  public final static String ST = X509Name.ST.getId();
+
+  /**
+   * OID fuer: Locality (L).
+   */
+  public final static String L = X509Name.L.getId();
+
   
   private String oid = null;
   private String value = null;
@@ -115,6 +130,9 @@ public class Attribute implements Serializable
 
 /**********************************************************************
  * $Log: Attribute.java,v $
+ * Revision 1.2  2009/10/07 11:39:27  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.1  2009/10/06 16:36:00  willuhn
  * @N Extensions
  * @N PEM-Writer

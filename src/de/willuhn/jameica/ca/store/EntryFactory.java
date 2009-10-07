@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/EntryFactory.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/10/06 16:47:58 $
+ * $Revision: 1.5 $
+ * $Date: 2009/10/07 11:39:28 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -15,6 +15,7 @@ package de.willuhn.jameica.ca.store;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -34,7 +35,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DERObjectIdentifier;
+import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier;
+import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
+import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
@@ -184,38 +191,56 @@ public class EntryFactory
     try
     {
       Entry entry = new Entry();
+      Entry issuer = template.getIssuer();
 
-      ////////////////////////////////////////////////////////////////////////////
-      // Schluesselpaar erstellen
+
       if (monitor != null) monitor.setStatusText("creating key pair");
       Logger.info("creating key pair");
       
+
+      ////////////////////////////////////////////////////////////////////////////
+      // Schluesselpaar erstellen
       KeyPairGenerator kp = KeyPairGenerator.getInstance("RSA",BouncyCastleProvider.PROVIDER_NAME);
       kp.initialize(template.getKeySize());
       KeyPair keypair = kp.generateKeyPair();
       entry.setPrivateKey(keypair.getPrivate());
-
-      if (monitor != null) monitor.addPercentComplete(20);
       //
       ////////////////////////////////////////////////////////////////////////////
 
 
-      ////////////////////////////////////////////////////////////////////////////
-      // Zertifikat erstellen
-      if (monitor != null) monitor.setStatusText("creating subject certificate");
       Logger.info("creating certificate");
+      if (monitor != null)
+      {
+        monitor.setStatusText("creating certificate");
+        monitor.addPercentComplete(20);
+      }
+      
 
+      ////////////////////////////////////////////////////////////////////////////
+      // Generator initialisieren
       X509V3CertificateGenerator generator = new X509V3CertificateGenerator();
       generator.setPublicKey(keypair.getPublic());
       generator.setSignatureAlgorithm(template.getSignatureAlgorithm());
+      ////////////////////////////////////////////////////////////////////////////
 
+
+      Logger.info("  algorithm: " + template.getSignatureAlgorithm());
       if (monitor != null) monitor.addPercentComplete(20);
 
+      
+      //////////////////////////////////////////////////////////////////////////
       // Gueltigkeit
       generator.setNotAfter(template.getValidTo());
       generator.setNotBefore(template.getValidFrom());
+      //////////////////////////////////////////////////////////////////////////
 
-      // Subject
+      
+      Logger.info("  validity: " + template.getValidFrom() + " - " + template.getValidTo());
+      if (monitor != null) monitor.addPercentComplete(10);
+
+      
+      //////////////////////////////////////////////////////////////////////////
+      // Attribute
       Hashtable<DERObjectIdentifier, String> props = new Hashtable();
       Vector<DERObjectIdentifier> order = new Vector<DERObjectIdentifier>();
       List<Attribute> attributes = template.getAttributes();
@@ -226,43 +251,79 @@ public class EntryFactory
         order.add(oid);
       }
       generator.setSubjectDN(new X509Name(order,props));
+      //////////////////////////////////////////////////////////////////////////
 
+      
+      if (monitor != null) monitor.addPercentComplete(10);
+
+      
+      //////////////////////////////////////////////////////////////////////////
       // Seriennummer
       byte[] serno = new byte[8];
       SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
       random.setSeed((long) (new Date().getTime()));
       random.nextBytes(serno);
-      generator.setSerialNumber((new BigInteger(serno)).abs());
+      BigInteger serial = new BigInteger(serno).abs();
+      generator.setSerialNumber(serial);
+      //////////////////////////////////////////////////////////////////////////
 
-      if (monitor != null) monitor.addPercentComplete(20);
 
+      Logger.info("  serial number: " + serial);
+      if (monitor != null) monitor.addPercentComplete(10);
+
+      
+      //////////////////////////////////////////////////////////////////////////
+      // Extensions
+
+      // Template-Extensions
       List<Extension> extensions = template.getExtensions();
       for (Extension e:extensions)
       {
         generator.addExtension(e.getOid(),e.isCritical(),e.getValue());
       }
-      
+
+      // Subject Key-Identifier als Extension hinzufuegen
+      SubjectPublicKeyInfo spki = new SubjectPublicKeyInfo((ASN1Sequence) new ASN1InputStream(new ByteArrayInputStream(keypair.getPublic().getEncoded())).readObject());
+      SubjectKeyIdentifier ski = new SubjectKeyIdentifier(spki);
+      generator.addExtension(X509Extensions.SubjectKeyIdentifier.getId(),false, ski);
+
+      // CA Key-Identifier als Extension hinzufuegen
+      if (issuer != null)
+      {
+        SubjectPublicKeyInfo apki = new SubjectPublicKeyInfo((ASN1Sequence) new ASN1InputStream(new ByteArrayInputStream(issuer.getCertificate().getPublicKey().getEncoded())).readObject());
+        AuthorityKeyIdentifier aki = new AuthorityKeyIdentifier(apki);
+        generator.addExtension(X509Extensions.AuthorityKeyIdentifier.getId(),false, aki);
+      }
+      //////////////////////////////////////////////////////////////////////////
+
+
       if (monitor != null) monitor.addPercentComplete(20);
 
+
+      //////////////////////////////////////////////////////////////////////////
       // Aussteller
       PrivateKey key = null;
       
-      Entry issuer = template.getIssuer();
-      if (issuer == null)
+      if (issuer != null)
       {
-        if (monitor != null) monitor.setStatusText("creating self signed certificate");
-        generator.setIssuerDN(new X509Name(order,props));
-        key = entry.getPrivateKey();
+        Logger.info("  issuer: " + issuer.getCertificate().getSubjectDN().getName());
+        if (monitor != null) monitor.setStatusText("creating ca signed certificate");
+        key = issuer.getPrivateKey();
+        generator.setIssuerDN(issuer.getCertificate().getSubjectX500Principal());
       }
       else
       {
-        if (monitor != null) monitor.setStatusText("creating ca signed certificate");
-        generator.setIssuerDN(issuer.getCertificate().getSubjectX500Principal());
-        key = issuer.getPrivateKey();
+        Logger.info("  issuer: <selfsigned>");
+        if (monitor != null) monitor.setStatusText("creating self signed certificate");
+        key = entry.getPrivateKey();
+        generator.setIssuerDN(new X509Name(order,props));
       }
+      
+      // Zertifikat erstellen
       entry.setCertificate(generator.generate(key));
       ////////////////////////////////////////////////////////////////////////////
 
+      Logger.info("certificate created");
       if (monitor != null)
       {
         monitor.setPercentComplete(100);
@@ -289,6 +350,9 @@ public class EntryFactory
 
 /**********************************************************************
  * $Log: EntryFactory.java,v $
+ * Revision 1.5  2009/10/07 11:39:28  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.4  2009/10/06 16:47:58  willuhn
  * @N Aussteller fehlte
  *

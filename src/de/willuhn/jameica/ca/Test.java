@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/Attic/Test.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/10/06 16:47:58 $
+ * $Revision: 1.5 $
+ * $Date: 2009/10/07 11:39:27 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -14,13 +14,15 @@
 package de.willuhn.jameica.ca;
 
 import java.io.File;
+import java.util.List;
 
 import de.willuhn.jameica.ca.store.Callback;
 import de.willuhn.jameica.ca.store.Entry;
 import de.willuhn.jameica.ca.store.EntryFactory;
 import de.willuhn.jameica.ca.store.Store;
 import de.willuhn.jameica.ca.store.EntryFactory.FORMAT;
-import de.willuhn.jameica.ca.store.template.WebserverTemplate;
+import de.willuhn.jameica.ca.store.template.Attribute;
+import de.willuhn.jameica.ca.store.template.CodeSignTemplate;
 
 
 /**
@@ -44,20 +46,31 @@ public class Test
     Store store = new Store(new File("/tmp/install/store.keystore"),cb);
     
     EntryFactory ef = new EntryFactory(cb);
-    Entry ca = ef.read(new File("/tmp/install/ca.crt"),new File("/tmp/install/ca.key"),FORMAT.PEM);
+    Entry ca = ef.read(new File("/tmp/install/willuhn.ca.licensing.crt"),new File("/tmp/install/willuhn.ca.licensing.key"),FORMAT.PEM);
     store.store(ca);
     
-    WebserverTemplate template = new WebserverTemplate();
-    template.setHostname("www.willuhn.de");
+    CodeSignTemplate template = new CodeSignTemplate();
     template.setIssuer(ca);
+
+    List<Attribute> attributes = template.getAttributes();
+    attributes.add(new Attribute(Attribute.CN,"willuhn.codesigning"));
+    attributes.add(new Attribute(Attribute.O,"willuhn software & services"));
+    attributes.add(new Attribute(Attribute.OU,"Development"));
+    attributes.add(new Attribute(Attribute.C,"DE"));
+    attributes.add(new Attribute(Attribute.L,"Leipzig"));
+    attributes.add(new Attribute(Attribute.ST,"Saxony"));
+
     Entry e = ef.create(template,null);
-    ef.write(e,new File("/tmp/install/server.crt"),new File("/tmp/install/server.key"),FORMAT.PEM);
+    ef.write(e,new File("/tmp/install/code.crt"),new File("/tmp/install/code.key"),FORMAT.PEM);
   }
 }
 
 
 /**********************************************************************
  * $Log: Test.java,v $
+ * Revision 1.5  2009/10/07 11:39:27  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.4  2009/10/06 16:47:58  willuhn
  * @N Aussteller fehlte
  *

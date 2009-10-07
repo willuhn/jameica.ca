@@ -1,6 +1,6 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/template/WebserverTemplate.java,v $
- * $Revision: 1.2 $
+ * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/template/CodeSignTemplate.java,v $
+ * $Revision: 1.1 $
  * $Date: 2009/10/07 11:39:27 $
  * $Author: willuhn $
  * $Locker:  $
@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.bouncycastle.asn1.DERObjectIdentifier;
-import org.bouncycastle.asn1.misc.MiscObjectIdentifiers;
-import org.bouncycastle.asn1.misc.NetscapeCertType;
 import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
 import org.bouncycastle.asn1.x509.KeyPurposeId;
@@ -26,14 +24,14 @@ import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.X509Extensions;
 
 /**
- * Vorkonfiguriertes Template fuer das Zertifikat eines Webservers.
+ * Vorkonfiguriertes Template fuer Code-Signierung.
  */
-public class WebserverTemplate extends Template
+public class CodeSignTemplate extends Template
 {
   /**
-   * Erstellt ein neues Template fuer ein Webserver-Zertifikat.
+   * Erstellt ein neues Template fuer Code-Signierung.
    */
-  public WebserverTemplate()
+  public CodeSignTemplate()
   {
     List<Extension> extensions = this.getExtensions();
 
@@ -44,22 +42,14 @@ public class WebserverTemplate extends Template
     // Key-Usage
     extensions.add(new Extension(X509Extensions.KeyUsage.getId(),
                                  true,
-                                 new KeyUsage(KeyUsage.digitalSignature |
-                                              KeyUsage.keyEncipherment | 
-                                              KeyUsage.nonRepudiation | 
-                                              KeyUsage.dataEncipherment).getDEREncoded()));
+                                 new KeyUsage(KeyUsage.digitalSignature).getDEREncoded()));
 
     // Server-Zertifikat
     Vector<DERObjectIdentifier> v = new Vector<DERObjectIdentifier>();
-    v.add(KeyPurposeId.id_kp_serverAuth);
+    v.add(KeyPurposeId.id_kp_codeSigning);
     extensions.add(new Extension(X509Extensions.ExtendedKeyUsage.getId(),
                                  false,
                                  new ExtendedKeyUsage(v).getDEREncoded()));
-
-    // Netscape-Extension
-    extensions.add(new Extension(MiscObjectIdentifiers.netscapeCertType.getId(),
-                                 false,
-                                 new NetscapeCertType(NetscapeCertType.sslServer).getDEREncoded()));
   }
   
   /**
@@ -67,18 +57,14 @@ public class WebserverTemplate extends Template
    */
   public String getName()
   {
-    return "Webserver-Zertifikat";
+    return "Code-Signierung";
   }
 }
 
 
 /**********************************************************************
- * $Log: WebserverTemplate.java,v $
- * Revision 1.2  2009/10/07 11:39:27  willuhn
+ * $Log: CodeSignTemplate.java,v $
+ * Revision 1.1  2009/10/07 11:39:27  willuhn
  * *** empty log message ***
- *
- * Revision 1.1  2009/10/06 16:36:00  willuhn
- * @N Extensions
- * @N PEM-Writer
  *
  **********************************************************************/
