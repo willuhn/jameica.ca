@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/EntryFactory.java,v $
- * $Revision: 1.6 $
- * $Date: 2009/10/07 11:47:59 $
+ * $Revision: 1.7 $
+ * $Date: 2009/10/07 16:38:59 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -29,10 +29,8 @@ import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -46,9 +44,7 @@ import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 
-import de.willuhn.jameica.ca.store.format.DERFormat;
 import de.willuhn.jameica.ca.store.format.Format;
-import de.willuhn.jameica.ca.store.format.PEMFormat;
 import de.willuhn.jameica.ca.store.template.Attribute;
 import de.willuhn.jameica.ca.store.template.Extension;
 import de.willuhn.jameica.ca.store.template.Template;
@@ -62,22 +58,8 @@ public class EntryFactory
 {
   private Callback callback = null;
   
-  /**
-   * Schluesselformat.
-   */
-  public static enum FORMAT
-  {
-    PEM,
-    DER
-  }
-  
-  private final static Map<FORMAT,Format> formatMap = new HashMap<FORMAT,Format>();
-  
   static
   {
-    formatMap.put(FORMAT.PEM,new PEMFormat());
-    formatMap.put(FORMAT.DER,new DERFormat());
-    
     if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null)
     {
       Provider p = new BouncyCastleProvider();
@@ -103,12 +85,8 @@ public class EntryFactory
    * @return der erzeugte Entry.
    * @throws Exception
    */
-  public Entry read(File cert, File privateKey, FORMAT format) throws Exception
+  public Entry read(File cert, File privateKey, Format format) throws Exception
   {
-    Format f = formatMap.get(format);
-    if (f == null)
-      throw new Exception("format " + format + " unknown");
-
     InputStream is = null;
 
     try
@@ -117,7 +95,7 @@ public class EntryFactory
 
       // Public Key
       is = new BufferedInputStream(new FileInputStream(cert));
-      e.setCertificate(f.readCertificate(is));
+      e.setCertificate(format.readCertificate(is));
       is.close();
       is = null;
 
@@ -126,7 +104,7 @@ public class EntryFactory
       {
         is = new BufferedInputStream(new FileInputStream(privateKey));
         char[] password = this.callback.getPassword(privateKey);
-        e.setPrivateKey(f.readPrivateKey(is,password));
+        e.setPrivateKey(format.readPrivateKey(is,password));
         is.close();
         is = null;
       }
@@ -148,17 +126,14 @@ public class EntryFactory
    * @param format das Dateiformat.
    * @throws Exception
    */
-  public void write(Entry entry, File cert, File privateKey, FORMAT format) throws Exception
+  public void write(Entry entry, File cert, File privateKey, Format format) throws Exception
   {
-    Format f = formatMap.get(format);
-    if (f == null)
-      throw new Exception("format " + format + " unknown");
-
     OutputStream os = null;
+
     try
     {
       os = new BufferedOutputStream(new FileOutputStream(cert));
-      f.writeCertificate(entry.getCertificate(),os);
+      format.writeCertificate(entry.getCertificate(),os);
       os.close();
       os = null;
 
@@ -168,7 +143,7 @@ public class EntryFactory
         if (key != null)
         {
           os = new BufferedOutputStream(new FileOutputStream(privateKey));
-          f.writePrivateKey(key,os);
+          format.writePrivateKey(key,os);
           os.close();
           os = null;
         }
@@ -354,6 +329,9 @@ public class EntryFactory
 
 /**********************************************************************
  * $Log: EntryFactory.java,v $
+ * Revision 1.7  2009/10/07 16:38:59  willuhn
+ * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
+ *
  * Revision 1.6  2009/10/07 11:47:59  willuhn
  * *** empty log message ***
  *

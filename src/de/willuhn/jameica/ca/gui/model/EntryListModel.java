@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/model/EntryListModel.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/07 12:24:04 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/07 16:38:59 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -58,7 +58,7 @@ public class EntryListModel
   /**
    * Implementiert eine einzelne Zeile.
    */
-  public class Line
+  public static class Line
   {
     private Entry entry = null;
     
@@ -66,7 +66,7 @@ public class EntryListModel
      * ct.
      * @param entry
      */
-    private Line(Entry entry)
+    public Line(Entry entry)
     {
       this.entry = entry;
     }
@@ -82,6 +82,18 @@ public class EntryListModel
       Certificate c = new Certificate(x);
       String cn = c.getSubject().getAttribute(Principal.COMMON_NAME);
       return cn == null ? x.getSubjectDN().getName() : cn;
+    }
+
+    /**
+     * Liefert den Namen der Organisation, auf die das Zertifikat ausgestellt ist.
+     * @return Name der Organisation, auf die das Zertifikat ausgestellt ist.
+     * @throws Exception
+     */
+    public String getOrganization() throws Exception
+    {
+      X509Certificate x = this.entry.getCertificate();
+      Certificate c = new Certificate(x);
+      return c.getSubject().getAttribute(Principal.ORGANIZATION);
     }
 
     /**
@@ -117,12 +129,23 @@ public class EntryListModel
       return this.entry.getCertificate().getNotAfter();
     }
 
+    /**
+     * Liefert true, wenn ein Private-Key vorhanden ist.
+     * @throws Exception
+     */
+    public boolean havePrivateKey() throws Exception
+    {
+      return this.entry.getPrivateKey() != null;
+    }
   }
 }
 
 
 /**********************************************************************
  * $Log: EntryListModel.java,v $
+ * Revision 1.2  2009/10/07 16:38:59  willuhn
+ * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
+ *
  * Revision 1.1  2009/10/07 12:24:04  willuhn
  * @N Erster GUI-Code
  *

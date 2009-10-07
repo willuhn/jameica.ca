@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/Attic/Test.java,v $
- * $Revision: 1.6 $
- * $Date: 2009/10/07 12:24:04 $
+ * $Revision: 1.7 $
+ * $Date: 2009/10/07 16:38:59 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -20,7 +20,8 @@ import de.willuhn.jameica.ca.store.Callback;
 import de.willuhn.jameica.ca.store.Entry;
 import de.willuhn.jameica.ca.store.EntryFactory;
 import de.willuhn.jameica.ca.store.Store;
-import de.willuhn.jameica.ca.store.EntryFactory.FORMAT;
+import de.willuhn.jameica.ca.store.format.Format;
+import de.willuhn.jameica.ca.store.format.PEMFormat;
 import de.willuhn.jameica.ca.store.template.Attribute;
 import de.willuhn.jameica.ca.store.template.CodeSignTemplate;
 
@@ -45,12 +46,13 @@ public class Test
     
     Store store = new Store(new File("/tmp/install/store.keystore"),cb);
     
-    EntryFactory ef = new EntryFactory(cb);
+    EntryFactory ef = store.getEntryFactory();
 
-    Entry ca = ef.read(new File("/tmp/install/ca.crt"),new File("/tmp/install/ca.key"),FORMAT.PEM);
+    Format pem = new PEMFormat();
+    Entry ca = ef.read(new File("/tmp/install/ca.crt"),new File("/tmp/install/ca.key"),pem);
     store.store(ca);
     
-    Entry cal = ef.read(new File("/tmp/install/willuhn.ca.licensing.crt"),new File("/tmp/install/willuhn.ca.licensing.key"),FORMAT.PEM);
+    Entry cal = ef.read(new File("/tmp/install/willuhn.ca.licensing.crt"),new File("/tmp/install/willuhn.ca.licensing.key"),pem);
     store.store(cal);
 
     
@@ -72,6 +74,9 @@ public class Test
 
 /**********************************************************************
  * $Log: Test.java,v $
+ * Revision 1.7  2009/10/07 16:38:59  willuhn
+ * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
+ *
  * Revision 1.6  2009/10/07 12:24:04  willuhn
  * @N Erster GUI-Code
  *

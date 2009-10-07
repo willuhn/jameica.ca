@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/format/PEMFormat.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/07 11:47:59 $
+ * $Revision: 1.4 $
+ * $Date: 2009/10/07 16:38:59 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -90,7 +90,7 @@ public class PEMFormat implements Format
    */
   public String getName()
   {
-    return "PEM-Format (Base64)";
+    return "PEM-Format, Base64 (Dateiendung meist *.pem oder *.crt)";
   }
 
 }
@@ -98,6 +98,9 @@ public class PEMFormat implements Format
 
 /**********************************************************************
  * $Log: PEMFormat.java,v $
+ * Revision 1.4  2009/10/07 16:38:59  willuhn
+ * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
+ *
  * Revision 1.3  2009/10/07 11:47:59  willuhn
  * *** empty log message ***
  *

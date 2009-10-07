@@ -19,7 +19,7 @@
   </classfinder>
 
   <navigation>
-    <item id="jameica.ca.navi.entrylist" name="Zertifikate" action="de.willuhn.jameica.ca.gui.action.EntryList" />
+    <item id="jameica.ca.navi.entrylist" name="Zertifikate" action="de.willuhn.jameica.ca.gui.action.EntryList" icon-close="key-ring.png" />
   </navigation>
   
   <services>

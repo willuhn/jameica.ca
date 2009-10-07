@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/service/impl/StoreServiceImpl.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/07 12:24:04 $
+ * $Revision: 1.4 $
+ * $Date: 2009/10/07 16:38:59 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -19,7 +19,9 @@ import java.rmi.RemoteException;
 import de.willuhn.jameica.ca.Plugin;
 import de.willuhn.jameica.ca.service.StoreService;
 import de.willuhn.jameica.ca.store.Callback;
+import de.willuhn.jameica.ca.store.Entry;
 import de.willuhn.jameica.ca.store.Store;
+import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 
@@ -76,7 +78,7 @@ public class StoreServiceImpl implements StoreService
     try
     {
       String dir = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getWorkPath();
-      File file = new File(dir,"jameica.ca.keystore");
+      final File file = new File(dir,"jameica.ca.keystore");
       this.store = new Store(file,new Callback()
       {
         /**
@@ -84,7 +86,17 @@ public class StoreServiceImpl implements StoreService
          */
         public char[] getPassword(Object context) throws Exception
         {
-          return Application.getCallback().getPassword().toCharArray();
+          // Beim Keystore selbst oder bei Entry-Objekten nehmen wir immer das Master-Passwort.
+          if (context != null && (context.equals(file) || (context instanceof Entry)))
+            return Application.getCallback().getPassword().toCharArray();
+          
+          // Wir fragen den User
+          QueryMessage msg = new QueryMessage(context);
+          Application.getMessagingFactory().getMessagingQueue("jameica.ca.callback.password").sendSyncMessage(msg);
+          Object data = msg.getData();
+          if (data != null && (data instanceof char[]))
+            return (char[]) data;
+          return new char[0];
         }
       });
     }
@@ -113,6 +125,9 @@ public class StoreServiceImpl implements StoreService
 
 /**********************************************************************
  * $Log: StoreServiceImpl.java,v $
+ * Revision 1.4  2009/10/07 16:38:59  willuhn
+ * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
+ *
  * Revision 1.3  2009/10/07 12:24:04  willuhn
  * @N Erster GUI-Code
  *

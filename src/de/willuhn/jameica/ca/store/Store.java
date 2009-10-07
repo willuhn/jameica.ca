@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Store.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/06 16:36:00 $
+ * $Revision: 1.3 $
+ * $Date: 2009/10/07 16:38:59 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -36,9 +36,10 @@ import de.willuhn.logging.Logger;
  */
 public class Store
 {
-  private File file         = null;
-  private KeyStore keystore = null;
-  private Callback callback = null;
+  private File file            = null;
+  private KeyStore keystore    = null;
+  private Callback callback    = null;
+  private EntryFactory factory = null;
 
   /**
    * ct.
@@ -189,12 +190,25 @@ public class Store
   }
   
   /**
+   * Liefert die EntryFactory zum Erstellen, Importieren und Exportieren von Entries.
+   * @return EntryFactory.
+   */
+  public EntryFactory getEntryFactory()
+  {
+    if (this.factory == null)
+      this.factory = new EntryFactory(this.callback);
+    return this.factory;
+  }
+  
+  /**
    * Laedt den Private-Key des Entry on-demand.
    * @param entry der Entry.
    */
   void unlock(Entry entry) throws Exception
   {
     String alias = entry.getAlias();
+    if (alias == null)
+      return;
     
     if (!this.keystore.containsAlias(alias))
       return;
@@ -208,6 +222,9 @@ public class Store
 
 /**********************************************************************
  * $Log: Store.java,v $
+ * Revision 1.3  2009/10/07 16:38:59  willuhn
+ * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
+ *
  * Revision 1.2  2009/10/06 16:36:00  willuhn
  * @N Extensions
  * @N PEM-Writer
