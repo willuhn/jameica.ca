@@ -20,6 +20,7 @@
 
   <navigation>
     <item id="jameica.ca.navi.entrylist" name="Zertifikate" action="de.willuhn.jameica.ca.gui.action.EntryList" icon-close="key-ring.png" />
+    <item id="jameica.ca.navi.entrytree" name="Zertifikate (Baumansicht)" action="de.willuhn.jameica.ca.gui.action.EntryTree" icon-close="key-ring.png" />
   </navigation>
   
   <services>

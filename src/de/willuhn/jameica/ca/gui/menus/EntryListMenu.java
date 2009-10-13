@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/menus/EntryListMenu.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/07 17:09:11 $
+ * $Revision: 1.3 $
+ * $Date: 2009/10/13 00:26:32 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -16,7 +16,7 @@ package de.willuhn.jameica.ca.gui.menus;
 import de.willuhn.jameica.ca.Plugin;
 import de.willuhn.jameica.ca.gui.action.EntryDelete;
 import de.willuhn.jameica.ca.gui.action.EntryImport;
-import de.willuhn.jameica.ca.gui.model.EntryListModel.Line;
+import de.willuhn.jameica.ca.gui.model.ListItem;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -43,9 +43,9 @@ public class EntryListMenu extends ContextMenu
     {
       public void handleAction(Object context) throws ApplicationException
       {
-        if (context == null || !(context instanceof Line))
+        if (context == null || !(context instanceof ListItem))
           return;
-        new EntryDelete().handleAction(((Line)context).getEntry());
+        new EntryDelete().handleAction(((ListItem)context).getEntry());
       }
     },"user-trash-full.png"));
   }
@@ -55,6 +55,9 @@ public class EntryListMenu extends ContextMenu
 
 /**********************************************************************
  * $Log: EntryListMenu.java,v $
+ * Revision 1.3  2009/10/13 00:26:32  willuhn
+ * @N Tree-View fuer Zertifikate
+ *
  * Revision 1.2  2009/10/07 17:09:11  willuhn
  * @N Schluessel loeschen
  *

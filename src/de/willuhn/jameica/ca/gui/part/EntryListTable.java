@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/part/EntryListTable.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/07 17:09:11 $
+ * $Revision: 1.4 $
+ * $Date: 2009/10/13 00:26:32 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.TableItem;
 import de.willuhn.jameica.ca.Plugin;
 import de.willuhn.jameica.ca.gui.menus.EntryListMenu;
 import de.willuhn.jameica.ca.gui.model.EntryListModel;
-import de.willuhn.jameica.ca.gui.model.EntryListModel.Line;
+import de.willuhn.jameica.ca.gui.model.ListItem;
 import de.willuhn.jameica.ca.store.Entry;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -32,6 +32,7 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.TableFormatter;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.Color;
+import de.willuhn.jameica.gui.util.Font;
 import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
@@ -78,14 +79,18 @@ public class EntryListTable extends TablePart
         try
         {
           // Abgelaufene Schluessel zeigen wir rot an.
-          Line line = (Line) item.getData();
+          ListItem line = (ListItem) item.getData();
           Date validTo = line.getValidTo();
           if (validTo != null && validTo.before(new Date()))
             item.setForeground(Color.ERROR.getSWTColor());
           else
             item.setForeground(Color.WIDGET_FG.getSWTColor());
           
-          // TODO: CA-Zertifikate zeigen wir fett gedruckt an.
+          // CA-Zertifikate zeigen wir fett gedruckt an.
+          if (line.isCA())
+            item.setFont(Font.BOLD.getSWTFont());
+          else
+            item.setFont(Font.DEFAULT.getSWTFont());
 
           // Wir zeigen unterschiedliche Icons an, wenn nur Public-Key vorhanden ist oder beides
           if (line.havePrivateKey())
@@ -158,7 +163,7 @@ public class EntryListTable extends TablePart
         {
           try
           {
-            addItem(new EntryListModel.Line((Entry)data));
+            addItem(new ListItem((Entry)data));
             sort();
           }
           catch (Exception e)
@@ -176,6 +181,9 @@ public class EntryListTable extends TablePart
 
 /**********************************************************************
  * $Log: EntryListTable.java,v $
+ * Revision 1.4  2009/10/13 00:26:32  willuhn
+ * @N Tree-View fuer Zertifikate
+ *
  * Revision 1.3  2009/10/07 17:09:11  willuhn
  * @N Schluessel loeschen
  *
