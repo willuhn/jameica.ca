@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Store.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/10/07 17:09:11 $
+ * $Revision: 1.5 $
+ * $Date: 2009/10/14 17:20:50 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -217,7 +217,7 @@ public class Store
     if (!this.keystore.containsAlias(alias))
       return;
     
-    Logger.info("unlock private key " + alias);
+    Logger.debug("unlock private key " + alias);
     PrivateKey key = (PrivateKey) this.keystore.getKey(alias,this.callback.getPassword(entry));
     entry.setPrivateKey(key);
   }
@@ -226,6 +226,9 @@ public class Store
 
 /**********************************************************************
  * $Log: Store.java,v $
+ * Revision 1.5  2009/10/14 17:20:50  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.4  2009/10/07 17:09:11  willuhn
  * @N Schluessel loeschen
  *
