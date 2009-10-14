@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/template/Template.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/06 16:36:00 $
+ * $Revision: 1.4 $
+ * $Date: 2009/10/14 23:58:17 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -26,15 +26,25 @@ import de.willuhn.jameica.ca.store.Entry;
  */
 public class Template implements Serializable
 {
-  private int keysize                = 2048;
-  private String signatureAlg        = "SHA1WithRSAEncryption";
+  /**
+   * Default-Schluessellaenge.
+   */
+  public final static int KEYSIZE_DEFAULT = 2048;
+  
+  /**
+   * Default-Signatur-Algorithmus.
+   */
+  public final static String SIGNATUREALG_DEFAULT = "SHA1WithRSAEncryption";
+  
+  private int keysize                = KEYSIZE_DEFAULT;
+  private String signatureAlg        = SIGNATUREALG_DEFAULT;
   
   private List<Attribute> attributes = new ArrayList<Attribute>();
   private List<Extension> extensions = new ArrayList<Extension>();
   private Entry issuer               = null;
   
   private Date validFrom             = new Date();
-  private Date validTo               = new Date(System.currentTimeMillis() + (1000l*60*60*24*365*10)); // per Default 10 Jahre
+  private Date validTo               = new Date(System.currentTimeMillis() + (1000l*60*60*24*365*2)); // per Default ~2 Jahre
   
   
   /**
@@ -169,6 +179,9 @@ public class Template implements Serializable
 
 /**********************************************************************
  * $Log: Template.java,v $
+ * Revision 1.4  2009/10/14 23:58:17  willuhn
+ * @N Erster Code fuer die Wizzards zum Erstellen neuer Zertifikate
+ *
  * Revision 1.3  2009/10/06 16:36:00  willuhn
  * @N Extensions
  * @N PEM-Writer
