@@ -1,6 +1,6 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/dialogs/EntryImportDialog.java,v $
- * $Revision: 1.3 $
+ * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/dialogs/EntryExportDialog.java,v $
+ * $Revision: 1.1 $
  * $Date: 2009/10/15 16:01:28 $
  * $Author: willuhn $
  * $Locker:  $
@@ -14,6 +14,7 @@
 package de.willuhn.jameica.ca.gui.dialogs;
 
 import java.io.File;
+import java.security.PrivateKey;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -28,38 +29,48 @@ import de.willuhn.jameica.ca.store.EntryFactory;
 import de.willuhn.jameica.ca.store.format.Format;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
-import de.willuhn.jameica.gui.input.FileInput;
+import de.willuhn.jameica.gui.input.DirectoryInput;
 import de.willuhn.jameica.gui.internal.buttons.Cancel;
 import de.willuhn.jameica.gui.util.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.security.Certificate;
+import de.willuhn.jameica.security.Principal;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.I18N;
 
 /**
- * Dialog zum Importieren eines X.509-Zertifikates zusammen mit einem Private-Key.
+ * Dialog zum Export eines X.509-Zertifikates zusammen mit einem Private-Key.
  */
-public class EntryImportDialog extends AbstractDialog
+public class EntryExportDialog extends AbstractDialog
 {
+  private final static Settings settings = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getSettings();
   private final static I18N i18n = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getI18N();
 
-  private FileInput cert           = null;
-  private FileInput key            = null;
+  private DirectoryInput dir       = null;
   private SelectFormatInput format = null;
   
-  private Entry entry = null;
-
+  private Entry entry              = null;
+  
   /**
    * ct.
+   * @param entry der zu exportierende Schluessel.
    * @param position
+   * @throws ApplicationException
    */
-  public EntryImportDialog(int position)
+  public EntryExportDialog(Entry entry, int position) throws ApplicationException
   {
     super(position);
+    
+    if (entry == null)
+      throw new ApplicationException(i18n.tr("Bitte wählen Sie den zu exportierenden Schlüssel aus."));
+
+    this.entry = entry;
     this.setSize(500,SWT.DEFAULT);
-    this.setTitle(i18n.tr("Schlüssel-Import"));
+    this.setTitle(i18n.tr("Schlüssel-Export"));
   }
 
   /**
@@ -67,7 +78,7 @@ public class EntryImportDialog extends AbstractDialog
    */
   protected Object getData() throws Exception
   {
-    return this.entry;
+    return null;
   }
 
   /**
@@ -79,15 +90,14 @@ public class EntryImportDialog extends AbstractDialog
     parent.addKeyListener(new KeyAdapter() {
       public void keyReleased(KeyEvent e) {
         if (e.keyCode == SWT.ESC)
-          throw new OperationCanceledException("import cancelled");
+          throw new OperationCanceledException("export cancelled");
       }
     });
     
     SimpleContainer container = new SimpleContainer(parent);
-    container.addText(i18n.tr("Bitte wählen die zu importierenden Schlüsseldateien aus,"),true);
+    container.addText(i18n.tr("Bitte wählen Sie das Verzeichnis, in dem die Schlüssel gespeichert werden sollen"),true);
     container.addInput(this.getFormatInput());
-    container.addInput(this.getCertInput());
-    container.addInput(this.getKeyInput());
+    container.addInput(this.getDirInput());
     
     ButtonArea buttons = container.createButtonArea(2);
     buttons.addButton(i18n.tr("Übernehmen"),new Action()
@@ -97,18 +107,27 @@ public class EntryImportDialog extends AbstractDialog
        */
       public void handleAction(Object context) throws ApplicationException
       {
-        String cert   = (String) getCertInput().getValue();
-        String key    = (String) getKeyInput().getValue();
         Format format = (Format) getFormatInput().getValue();
-        
-        if (cert == null || cert.length() == 0 || format == null)
+        String s      = (String) getDirInput().getValue();
+
+        if (s == null || s.length() == 0 || format == null)
           return;
+
+        settings.setAttribute("dir.last",s);
         
         try
         {
+          // Wir ermitteln die Dateinamen anhand des Common-Names.
+          PrivateKey pk = entry.getPrivateKey();
+          Certificate cert = new Certificate(entry.getCertificate());
+          String name = cert.getSubject().getAttribute(Principal.COMMON_NAME);
+          
+          File certFile = new File(s,name + ".crt");
+          File keyFile = (pk != null ? new File(s,name + ".key") : null);
+          
           StoreService service = (StoreService) Application.getServiceFactory().lookup(Plugin.class,"store");
           EntryFactory ef = service.getStore().getEntryFactory();
-          entry = ef.read(new File(cert),key != null && key.length() > 0 ? new File(key) : null,format);
+          ef.write(entry,certFile,keyFile,format);
           close();
         }
         catch (ApplicationException ae)
@@ -127,56 +146,33 @@ public class EntryImportDialog extends AbstractDialog
   }
   
   /**
-   * Liefert ein Eingabefeld fuer die Datei des Zertifikates.
+   * Liefert ein Eingabefeld fuer das Zielverzeichnis.
    * @return Eingabefeld.
    */
-  private FileInput getCertInput()
+  private DirectoryInput getDirInput()
   {
-    if (this.cert != null)
-      return this.cert;
+    if (this.dir != null)
+      return this.dir;
     
-    this.cert = new FileInput(null)
+    String lastdir = settings.getString("dir.last",System.getProperty("user.home"));
+
+    this.dir = new DirectoryInput(lastdir)
     {
       /**
-       * @see de.willuhn.jameica.gui.input.FileInput#setValue(java.lang.Object)
+       * @see de.willuhn.jameica.gui.input.DirectoryInput#setValue(java.lang.Object)
        */
       public void setValue(Object value)
       {
         super.setValue(value);
-        // Damit der Dialog nach der Dateiauswahl wieder angezeigt wird
+        // Damit der Dialog nach der Auswahl wieder angezeigt wird
         getShell().forceActive();
       }
     };
-    this.cert.setName(i18n.tr("Zertifikat"));
-    this.cert.setMandatory(true);
-    return this.cert;
+    this.dir.setName(i18n.tr("Zielverzeichnis"));
+    this.dir.setMandatory(true);
+    return this.dir;
   }
 
-  /**
-   * Liefert ein Eingabefeld fuer die Datei des Keys.
-   * @return Eingabefeld.
-   */
-  private FileInput getKeyInput()
-  {
-    if (this.key != null)
-      return this.key;
-    
-    this.key = new FileInput(null)
-    {
-      /**
-       * @see de.willuhn.jameica.gui.input.FileInput#setValue(java.lang.Object)
-       */
-      public void setValue(Object value)
-      {
-        super.setValue(value);
-        // Damit der Dialog nach der Dateiauswahl wieder angezeigt wird
-        getShell().forceActive();
-      }
-    };
-    this.key.setName(i18n.tr("Private-Key"));
-    return this.key;
-  }
-  
   /**
    * Liefert ein Auswahlfeld fuer das Schluesselformat.
    * @return Auswahlfeld.
@@ -195,14 +191,8 @@ public class EntryImportDialog extends AbstractDialog
 
 
 /**********************************************************************
- * $Log: EntryImportDialog.java,v $
- * Revision 1.3  2009/10/15 16:01:28  willuhn
+ * $Log: EntryExportDialog.java,v $
+ * Revision 1.1  2009/10/15 16:01:28  willuhn
  * @N Schluessel-Export
- *
- * Revision 1.2  2009/10/15 11:50:43  willuhn
- * @N Erste Schluessel-Erstellung via GUI und Wizzard funktioniert ;)
- *
- * Revision 1.1  2009/10/07 16:38:59  willuhn
- * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
  *
  **********************************************************************/

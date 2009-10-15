@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/menus/EntryListMenu.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/10/15 11:50:43 $
+ * $Revision: 1.5 $
+ * $Date: 2009/10/15 16:01:28 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -16,6 +16,7 @@ package de.willuhn.jameica.ca.gui.menus;
 import de.willuhn.jameica.ca.Plugin;
 import de.willuhn.jameica.ca.gui.action.EntryCreate;
 import de.willuhn.jameica.ca.gui.action.EntryDelete;
+import de.willuhn.jameica.ca.gui.action.EntryExport;
 import de.willuhn.jameica.ca.gui.action.EntryImport;
 import de.willuhn.jameica.ca.gui.action.EntryView;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -37,8 +38,10 @@ public class EntryListMenu extends ContextMenu
   public EntryListMenu()
   {
     this.addItem(new CheckedSingleContextMenuItem(i18n.tr("Schlüssel anzeigen..."),new EntryView(),"key-pub.png"));
-    this.addItem(new ContextMenuItem(i18n.tr("Schlüssel importieren..."),new EntryImport(),"key-import.png"));
     this.addItem(new ContextMenuItem(i18n.tr("Schlüssel erstellen..."),new EntryCreate(),"key-new.png"));
+    this.addItem(ContextMenuItem.SEPARATOR);
+    this.addItem(new ContextMenuItem(i18n.tr("Schlüssel importieren..."),new EntryImport(),"key-import.png"));
+    this.addItem(new CheckedSingleContextMenuItem(i18n.tr("Schlüssel exportieren..."),new EntryExport(),"key-export.png"));
     this.addItem(ContextMenuItem.SEPARATOR);
     this.addItem(new CheckedSingleContextMenuItem(i18n.tr("Schlüssel löschen..."),new EntryDelete(),"user-trash-full.png"));
   }
@@ -48,6 +51,9 @@ public class EntryListMenu extends ContextMenu
 
 /**********************************************************************
  * $Log: EntryListMenu.java,v $
+ * Revision 1.5  2009/10/15 16:01:28  willuhn
+ * @N Schluessel-Export
+ *
  * Revision 1.4  2009/10/15 11:50:43  willuhn
  * @N Erste Schluessel-Erstellung via GUI und Wizzard funktioniert ;)
  *
