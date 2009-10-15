@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/controller/EntryCreateControl.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/15 15:25:25 $
+ * $Revision: 1.3 $
+ * $Date: 2009/10/15 22:55:29 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -15,7 +15,7 @@ package de.willuhn.jameica.ca.gui.controller;
 
 import de.willuhn.jameica.ca.Plugin;
 import de.willuhn.jameica.ca.gui.action.EntryTree;
-import de.willuhn.jameica.ca.gui.wizzard.CreateCertificateWizzard;
+import de.willuhn.jameica.ca.gui.wizzard.CertificateWizzard;
 import de.willuhn.jameica.ca.service.StoreService;
 import de.willuhn.jameica.ca.store.Entry;
 import de.willuhn.jameica.ca.store.EntryFactory;
@@ -55,9 +55,9 @@ public class EntryCreateControl extends AbstractControl
    * Liefert den vom User ausgewaehlten Wizzard.
    * @return der vom User ausgewaehlte Wizzard.
    */
-  public CreateCertificateWizzard getWizzard()
+  public CertificateWizzard getWizzard()
   {
-    return (CreateCertificateWizzard) this.getCurrentObject();
+    return (CertificateWizzard) this.getCurrentObject();
   }
   
   /**
@@ -148,6 +148,9 @@ public class EntryCreateControl extends AbstractControl
 
 /**********************************************************************
  * $Log: EntryCreateControl.java,v $
+ * Revision 1.3  2009/10/15 22:55:29  willuhn
+ * @N Wizzard zum Erstellen von Hibiscus Payment-Server Lizenzen
+ *
  * Revision 1.2  2009/10/15 15:25:25  willuhn
  * @N Reload des Tree nach Erstellen/Loeschen eines Schluessels
  *

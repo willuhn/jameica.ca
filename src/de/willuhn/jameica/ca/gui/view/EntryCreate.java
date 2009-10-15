@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/view/EntryCreate.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/15 11:50:42 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/15 22:55:30 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -15,7 +15,7 @@ package de.willuhn.jameica.ca.gui.view;
 
 import de.willuhn.jameica.ca.Plugin;
 import de.willuhn.jameica.ca.gui.controller.EntryCreateControl;
-import de.willuhn.jameica.ca.gui.wizzard.CreateCertificateWizzard;
+import de.willuhn.jameica.ca.gui.wizzard.CertificateWizzard;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -38,7 +38,7 @@ public class EntryCreate extends AbstractView
   public void bind() throws Exception
   {
     final EntryCreateControl control = new EntryCreateControl(this);
-    CreateCertificateWizzard wizzard = control.getWizzard();
+    CertificateWizzard wizzard = control.getWizzard();
 
     GUI.getView().setTitle(wizzard.getName());
     
@@ -64,6 +64,9 @@ public class EntryCreate extends AbstractView
 
 /**********************************************************************
  * $Log: EntryCreate.java,v $
+ * Revision 1.2  2009/10/15 22:55:30  willuhn
+ * @N Wizzard zum Erstellen von Hibiscus Payment-Server Lizenzen
+ *
  * Revision 1.1  2009/10/15 11:50:42  willuhn
  * @N Erste Schluessel-Erstellung via GUI und Wizzard funktioniert ;)
  *

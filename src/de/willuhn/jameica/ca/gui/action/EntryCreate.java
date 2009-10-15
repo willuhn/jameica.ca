@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/action/EntryCreate.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/15 11:50:42 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/15 22:55:30 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -15,7 +15,7 @@ package de.willuhn.jameica.ca.gui.action;
 
 import de.willuhn.jameica.ca.Plugin;
 import de.willuhn.jameica.ca.gui.dialogs.SelectCreateWizzardDialog;
-import de.willuhn.jameica.ca.gui.wizzard.CreateCertificateWizzard;
+import de.willuhn.jameica.ca.gui.wizzard.CertificateWizzard;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.Application;
@@ -40,15 +40,15 @@ public class EntryCreate implements Action
     {
       // Wenn wir als Parameter bereits einen Wizzard uebergeben gekriegt haben,
       // nehmen wir gleich den. Ansonsten fragen wir den User.
-      CreateCertificateWizzard wizzard = null;
-      if (context != null && (context instanceof CreateCertificateWizzard))
+      CertificateWizzard wizzard = null;
+      if (context != null && (context instanceof CertificateWizzard))
       {
-        wizzard = (CreateCertificateWizzard) context;
+        wizzard = (CertificateWizzard) context;
       }
       else
       {
         SelectCreateWizzardDialog d = new SelectCreateWizzardDialog(SelectCreateWizzardDialog.POSITION_CENTER);
-        wizzard = (CreateCertificateWizzard) d.open();
+        wizzard = (CertificateWizzard) d.open();
       }
       
       if (wizzard == null)
@@ -75,6 +75,9 @@ public class EntryCreate implements Action
 
 /**********************************************************************
  * $Log: EntryCreate.java,v $
+ * Revision 1.2  2009/10/15 22:55:30  willuhn
+ * @N Wizzard zum Erstellen von Hibiscus Payment-Server Lizenzen
+ *
  * Revision 1.1  2009/10/15 11:50:42  willuhn
  * @N Erste Schluessel-Erstellung via GUI und Wizzard funktioniert ;)
  *

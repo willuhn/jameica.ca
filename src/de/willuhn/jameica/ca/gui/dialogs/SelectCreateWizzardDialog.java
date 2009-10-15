@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/dialogs/SelectCreateWizzardDialog.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/15 11:50:43 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/15 22:55:29 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -19,7 +19,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
 
 import de.willuhn.jameica.ca.Plugin;
-import de.willuhn.jameica.ca.gui.wizzard.CreateCertificateWizzard;
+import de.willuhn.jameica.ca.gui.wizzard.CertificateWizzard;
 import de.willuhn.jameica.ca.gui.wizzard.WizzardUtil;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -39,7 +39,7 @@ public class SelectCreateWizzardDialog extends AbstractDialog
 {
   private final static I18N i18n = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getI18N();
 
-  private CreateCertificateWizzard wizzard = null;
+  private CertificateWizzard wizzard = null;
   
   /**
    * ct.
@@ -89,7 +89,7 @@ public class SelectCreateWizzardDialog extends AbstractDialog
     {
       public void handleAction(Object context) throws ApplicationException
       {
-        CreateCertificateWizzard selected = (CreateCertificateWizzard) select.getValue();
+        CertificateWizzard selected = (CertificateWizzard) select.getValue();
         if (selected == null)
           return;
         
@@ -105,6 +105,9 @@ public class SelectCreateWizzardDialog extends AbstractDialog
 
 /**********************************************************************
  * $Log: SelectCreateWizzardDialog.java,v $
+ * Revision 1.2  2009/10/15 22:55:29  willuhn
+ * @N Wizzard zum Erstellen von Hibiscus Payment-Server Lizenzen
+ *
  * Revision 1.1  2009/10/15 11:50:43  willuhn
  * @N Erste Schluessel-Erstellung via GUI und Wizzard funktioniert ;)
  *

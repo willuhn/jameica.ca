@@ -1,7 +1,7 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/wizzard/Attic/CreateCertificateWizzard.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/15 11:50:42 $
+ * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/wizzard/CertificateWizzard.java,v $
+ * $Revision: 1.1 $
+ * $Date: 2009/10/15 22:55:29 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -48,7 +48,7 @@ import de.willuhn.util.ApplicationException;
  *   </li>
  * </ol>
  */
-public interface CreateCertificateWizzard extends Part, Comparable
+public interface CertificateWizzard extends Part, Comparable
 {
   /**
    * Liefert einen sprechenden Namen fuer den Wizzard bzw. das Zertifikat-Format.
@@ -69,7 +69,10 @@ public interface CreateCertificateWizzard extends Part, Comparable
 
 
 /**********************************************************************
- * $Log: CreateCertificateWizzard.java,v $
+ * $Log: CertificateWizzard.java,v $
+ * Revision 1.1  2009/10/15 22:55:29  willuhn
+ * @N Wizzard zum Erstellen von Hibiscus Payment-Server Lizenzen
+ *
  * Revision 1.3  2009/10/15 11:50:42  willuhn
  * @N Erste Schluessel-Erstellung via GUI und Wizzard funktioniert ;)
  *

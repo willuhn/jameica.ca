@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Entry.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/10/15 17:04:48 $
+ * $Revision: 1.5 $
+ * $Date: 2009/10/15 22:55:29 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -32,7 +32,10 @@ import de.willuhn.jameica.security.Principal;
  */
 public class Entry implements Comparable
 {
-  private final static boolean CHECK_CA = false;
+  /**
+   * Legt fest, ob nur tatsaechliche CA-Zertifikate als solche benutzt werden duerfen
+   */
+  public final static boolean CHECK_CA = false;
   
   private Store store          = null;
 
@@ -276,11 +279,67 @@ public class Entry implements Comparable
     
     return cn1.compareTo(cn2);
   }
+
+  /**
+   * Generiert von Eclipse.
+   * @see java.lang.Object#hashCode()
+   */
+  public int hashCode()
+  {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.alias == null) ? 0 : this.alias.hashCode());
+    result = prime * result + ((this.cert == null) ? 0 : this.cert.hashCode());
+    result = prime * result + ((this.key == null) ? 0 : this.key.hashCode());
+    return result;
+  }
+
+  /**
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  public boolean equals(Object obj)
+  {
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+
+    Entry other = (Entry) obj;
+    if (this.alias == null)
+    {
+      if (other.alias != null)
+        return false;
+    }
+    else if (!this.alias.equals(other.alias))
+      return false;
+    
+    if (this.cert == null)
+    {
+      if (other.cert != null)
+        return false;
+    }
+    else if (!this.cert.equals(other.cert))
+      return false;
+
+    if (this.key == null)
+    {
+      if (other.key != null)
+        return false;
+    }
+    else if (!this.key.equals(other.key))
+      return false;
+
+    return true;
+  }
+  
+  
 }
 
 
 /**********************************************************************
  * $Log: Entry.java,v $
+ * Revision 1.5  2009/10/15 22:55:29  willuhn
+ * @N Wizzard zum Erstellen von Hibiscus Payment-Server Lizenzen
+ *
  * Revision 1.4  2009/10/15 17:04:48  willuhn
  * *** empty log message ***
  *
