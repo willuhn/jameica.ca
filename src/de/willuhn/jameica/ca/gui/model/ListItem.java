@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/model/ListItem.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/13 00:26:32 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/15 17:04:48 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -75,10 +75,10 @@ public class ListItem implements GenericObjectNode
    */
   public String getIssuer() throws Exception
   {
-    X509Certificate x = this.entry.getCertificate();
-    Certificate c = new Certificate(x);
-    String cn = c.getIssuer().getAttribute(Principal.COMMON_NAME);
-    return cn == null ? x.getIssuerDN().getName() : cn;
+    String cn = this.entry.getCommonName();
+    if (cn != null)
+      return cn;
+    return this.entry.getCertificate().getIssuerDN().getName();
   }
   
   /**
@@ -269,6 +269,9 @@ public class ListItem implements GenericObjectNode
 
 /**********************************************************************
  * $Log: ListItem.java,v $
+ * Revision 1.2  2009/10/15 17:04:48  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.1  2009/10/13 00:26:32  willuhn
  * @N Tree-View fuer Zertifikate
  *

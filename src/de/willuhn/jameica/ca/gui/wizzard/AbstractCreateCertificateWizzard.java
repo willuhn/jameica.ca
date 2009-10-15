@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/wizzard/Attic/AbstractCreateCertificateWizzard.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/15 15:25:25 $
+ * $Revision: 1.4 $
+ * $Date: 2009/10/15 17:04:48 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -16,6 +16,7 @@ package de.willuhn.jameica.ca.gui.wizzard;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.I18N;
@@ -144,6 +146,9 @@ public abstract class AbstractCreateCertificateWizzard implements CreateCertific
 
       try
       {
+        Settings settings = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getSettings();
+        boolean checkCa = settings.getBoolean("sign.checkca",true);
+        
         // Wir holen uns die Liste der brauchbaren Aussteller-Zertifikate
         StoreService service = (StoreService) Application.getServiceFactory().lookup(Plugin.class,"store");
         Store store = service.getStore();
@@ -151,11 +156,15 @@ public abstract class AbstractCreateCertificateWizzard implements CreateCertific
         List<Entry> entries = store.getEntries();
         for (Entry e:entries)
         {
-          // Nehmen wir nur, wenn es eine CA ist und wir den Private-Key zum
-          // Unterschreiben haben.
-          if (e.isCA() && e.getPrivateKey() != null)
+          // Keine CA unc CA-Pruefung aktiv
+          if (checkCa && !e.isCA())
+            continue;
+          
+          // Nur, wenn wir einen Private-Key zum Unterschreiben haben.
+          if (e.getPrivateKey() != null)
             cacerts.add(e);
         }
+        Collections.sort(cacerts);
       }
       catch (Exception e)
       {
@@ -163,6 +172,7 @@ public abstract class AbstractCreateCertificateWizzard implements CreateCertific
       }
 
       this.issuer = new SelectInput(cacerts,null);
+      this.issuer.setAttribute("commonName");
       this.issuer.setName(i18n.tr("Aussteller"));
       this.issuer.setPleaseChoose(i18n.tr("kein Aussteller (selbstsigniertes Zertifikat)"));
     }
@@ -240,6 +250,9 @@ public abstract class AbstractCreateCertificateWizzard implements CreateCertific
 
 /**********************************************************************
  * $Log: AbstractCreateCertificateWizzard.java,v $
+ * Revision 1.4  2009/10/15 17:04:48  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.3  2009/10/15 15:25:25  willuhn
  * @N Reload des Tree nach Erstellen/Loeschen eines Schluessels
  *

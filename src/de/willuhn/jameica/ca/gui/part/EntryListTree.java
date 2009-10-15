@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/part/EntryListTree.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/15 15:25:25 $
+ * $Revision: 1.3 $
+ * $Date: 2009/10/15 17:04:48 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -139,7 +139,6 @@ public class EntryListTree extends TreePart
       });
     }
 
-
     super.paint(this.comp);
   }
   
@@ -200,6 +199,9 @@ public class EntryListTree extends TreePart
 
 /**********************************************************************
  * $Log: EntryListTree.java,v $
+ * Revision 1.3  2009/10/15 17:04:48  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.2  2009/10/15 15:25:25  willuhn
  * @N Reload des Tree nach Erstellen/Loeschen eines Schluessels
  *

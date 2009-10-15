@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Entry.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/13 00:26:31 $
+ * $Revision: 1.4 $
+ * $Date: 2009/10/15 17:04:48 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -23,12 +23,17 @@ import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.asn1.x509.X509Extensions;
 
+import de.willuhn.jameica.security.Certificate;
+import de.willuhn.jameica.security.Principal;
+
 /**
  * Ein einzelner Eintrag aus dem StoreService.
  * In der Regel handelt es sich hier um ein Schluesselpaar.
  */
-public class Entry
+public class Entry implements Comparable
 {
+  private final static boolean CHECK_CA = false;
+  
   private Store store          = null;
 
   private String alias         = null;
@@ -57,9 +62,8 @@ public class Entry
   /**
    * Liefert das Zertifikat.
    * @return das Zertifikat.
-   * @throws Exception 
    */
-  public X509Certificate getCertificate() throws Exception
+  public X509Certificate getCertificate()
   {
     return this.cert;
   }
@@ -101,6 +105,18 @@ public class Entry
   public String getAlias()
   {
     return this.alias;
+  }
+  
+  /**
+   * Common-Name des Inhabers.
+   * @return Liefert den Common-Name des Inhabers.
+   */
+  public String getCommonName()
+  {
+    X509Certificate c = this.getCertificate();
+    if (c == null)
+      return null;
+    return new Certificate(c).getSubject().getAttribute(Principal.COMMON_NAME);
   }
   
   /**
@@ -148,8 +164,9 @@ public class Entry
     {
       for (Entry e:all)
       {
-        if (!e.isCA())
+        if (CHECK_CA && !e.isCA())
           continue;
+
         
         // OK, wir haben die Signatur des Ausstellers. Mal schauen,
         // ob wir sie im Keystore finden.
@@ -162,7 +179,7 @@ public class Entry
     // Wir haben die Signatur nicht, stimmt vielleicht einen passenden DN?
     for (Entry e:all)
     {
-      if (!e.isCA())
+      if (CHECK_CA && !e.isCA())
         continue;
 
       X500Principal subject = e.getCertificate().getSubjectX500Principal();
@@ -177,9 +194,8 @@ public class Entry
   /**
    * Liefert true, wenn es sich um ein CA-Zertifikat handelt.
    * @return true, wenn es sich um ein CA-Zertifikat handelt.
-   * @throws Exception
    */
-  public boolean isCA() throws Exception
+  public boolean isCA()
   {
     X509Certificate x = this.getCertificate();
     return x.getBasicConstraints() > -1;
@@ -195,8 +211,7 @@ public class Entry
   {
     List<Entry> children = new ArrayList<Entry>();
 
-    // 1. Wir checken erstmal, ob wir ueberhaupt ein CA-Zertifikat sind
-    if (!this.isCA())
+    if (CHECK_CA && !this.isCA())
       return children;
 
     X509Certificate x = this.getCertificate();
@@ -241,11 +256,34 @@ public class Entry
     
     return children;
   }
+
+  /**
+   * @see java.lang.Comparable#compareTo(java.lang.Object)
+   */
+  public int compareTo(Object o)
+  {
+    if (o == null || !(o instanceof Entry))
+      return -1;
+    
+    Entry e = (Entry) o;
+    String cn1 = this.getCommonName();
+    if (cn1 == null || cn1.length() == 0)
+      return -1;
+    
+    String cn2 = e.getCommonName();
+    if (cn2 == null || cn2.length() == 0)
+      return 1;
+    
+    return cn1.compareTo(cn2);
+  }
 }
 
 
 /**********************************************************************
  * $Log: Entry.java,v $
+ * Revision 1.4  2009/10/15 17:04:48  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.3  2009/10/13 00:26:31  willuhn
  * @N Tree-View fuer Zertifikate
  *

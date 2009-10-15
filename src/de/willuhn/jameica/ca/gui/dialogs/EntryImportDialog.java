@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/dialogs/EntryImportDialog.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/15 16:01:28 $
+ * $Revision: 1.4 $
+ * $Date: 2009/10/15 17:04:48 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -34,6 +34,7 @@ import de.willuhn.jameica.gui.util.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.I18N;
@@ -43,6 +44,7 @@ import de.willuhn.util.I18N;
  */
 public class EntryImportDialog extends AbstractDialog
 {
+  private final static Settings settings = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getSettings();
   private final static I18N i18n = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getI18N();
 
   private FileInput cert           = null;
@@ -103,7 +105,10 @@ public class EntryImportDialog extends AbstractDialog
         
         if (cert == null || cert.length() == 0 || format == null)
           return;
-        
+
+        settings.setAttribute("import.cert.last",cert);
+        settings.setAttribute("import.key.last",key);
+
         try
         {
           StoreService service = (StoreService) Application.getServiceFactory().lookup(Plugin.class,"store");
@@ -135,7 +140,8 @@ public class EntryImportDialog extends AbstractDialog
     if (this.cert != null)
       return this.cert;
     
-    this.cert = new FileInput(null)
+    String s = settings.getString("import.cert.last",System.getProperty("user.home"));
+    this.cert = new FileInput(s)
     {
       /**
        * @see de.willuhn.jameica.gui.input.FileInput#setValue(java.lang.Object)
@@ -161,7 +167,8 @@ public class EntryImportDialog extends AbstractDialog
     if (this.key != null)
       return this.key;
     
-    this.key = new FileInput(null)
+    String s = settings.getString("import.key.last",System.getProperty("user.home"));
+    this.key = new FileInput(s)
     {
       /**
        * @see de.willuhn.jameica.gui.input.FileInput#setValue(java.lang.Object)
@@ -196,6 +203,9 @@ public class EntryImportDialog extends AbstractDialog
 
 /**********************************************************************
  * $Log: EntryImportDialog.java,v $
+ * Revision 1.4  2009/10/15 17:04:48  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.3  2009/10/15 16:01:28  willuhn
  * @N Schluessel-Export
  *
