@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/dialogs/EntryImportDialog.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/10/15 17:04:48 $
+ * $Revision: 1.5 $
+ * $Date: 2009/10/15 23:15:04 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -60,7 +60,7 @@ public class EntryImportDialog extends AbstractDialog
   public EntryImportDialog(int position)
   {
     super(position);
-    this.setSize(500,SWT.DEFAULT);
+    this.setSize(550,SWT.DEFAULT);
     this.setTitle(i18n.tr("Schlüssel-Import"));
   }
 
@@ -203,6 +203,9 @@ public class EntryImportDialog extends AbstractDialog
 
 /**********************************************************************
  * $Log: EntryImportDialog.java,v $
+ * Revision 1.5  2009/10/15 23:15:04  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.4  2009/10/15 17:04:48  willuhn
  * *** empty log message ***
  *

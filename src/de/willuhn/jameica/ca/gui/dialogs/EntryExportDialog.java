@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/dialogs/EntryExportDialog.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/15 16:01:28 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/15 23:15:04 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -69,7 +69,7 @@ public class EntryExportDialog extends AbstractDialog
       throw new ApplicationException(i18n.tr("Bitte wählen Sie den zu exportierenden Schlüssel aus."));
 
     this.entry = entry;
-    this.setSize(500,SWT.DEFAULT);
+    this.setSize(550,SWT.DEFAULT);
     this.setTitle(i18n.tr("Schlüssel-Export"));
   }
 
@@ -192,6 +192,9 @@ public class EntryExportDialog extends AbstractDialog
 
 /**********************************************************************
  * $Log: EntryExportDialog.java,v $
+ * Revision 1.2  2009/10/15 23:15:04  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.1  2009/10/15 16:01:28  willuhn
  * @N Schluessel-Export
  *

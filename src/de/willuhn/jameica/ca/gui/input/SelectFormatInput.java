@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/input/SelectFormatInput.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/07 16:38:59 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/15 23:14:18 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -39,7 +39,7 @@ public class SelectFormatInput extends SelectInput
     super(init(), null);
     this.setAttribute("name");
     this.setName(i18n.tr("Schlüsselformat"));
-    this.setPleaseChoose(i18n.tr("Bitte whählen..."));
+    this.setPleaseChoose(i18n.tr("Bitte wählen..."));
   }
   
   /**
@@ -76,6 +76,9 @@ public class SelectFormatInput extends SelectInput
 
 /**********************************************************************
  * $Log: SelectFormatInput.java,v $
+ * Revision 1.2  2009/10/15 23:14:18  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.1  2009/10/07 16:38:59  willuhn
  * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
  *
