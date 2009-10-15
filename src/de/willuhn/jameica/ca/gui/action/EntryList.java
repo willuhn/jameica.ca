@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/action/EntryList.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/07 12:24:04 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/15 11:50:42 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -13,7 +13,6 @@
 
 package de.willuhn.jameica.ca.gui.action;
 
-import de.willuhn.jameica.ca.gui.view.EntryListView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -29,7 +28,7 @@ public class EntryList implements Action
    */
   public void handleAction(Object context) throws ApplicationException
   {
-    GUI.startView(EntryListView.class,null);
+    GUI.startView(de.willuhn.jameica.ca.gui.view.EntryList.class,null);
   }
 
 }
@@ -37,6 +36,9 @@ public class EntryList implements Action
 
 /**********************************************************************
  * $Log: EntryList.java,v $
+ * Revision 1.2  2009/10/15 11:50:42  willuhn
+ * @N Erste Schluessel-Erstellung via GUI und Wizzard funktioniert ;)
+ *
  * Revision 1.1  2009/10/07 12:24:04  willuhn
  * @N Erster GUI-Code
  *

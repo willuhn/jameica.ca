@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/wizzard/Attic/CreateCertificateWizzard.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/14 23:58:17 $
+ * $Revision: 1.3 $
+ * $Date: 2009/10/15 11:50:42 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -35,7 +35,7 @@ import de.willuhn.util.ApplicationException;
  *     paint(Composite) aufgerufen wird. Die Implementierung kann hier
  *     Controls anzeigen, in denen der User die noetigen Benutzereingaben
  *     vornehmen kann. Die Implementierung sollte keine eigenen Buttons zeichnen,
- *     da das Composite bereits in einem modalen Dialog angezeigt wird, der
+ *     da das Composite bereits in einer View angezeigt wird, die
  *     mit einem "Abbrechen"- und "Uebernehmen"-Button versehen ist.
  *   </li>
  *    
@@ -48,7 +48,7 @@ import de.willuhn.util.ApplicationException;
  *   </li>
  * </ol>
  */
-public interface CreateCertificateWizzard extends Part
+public interface CreateCertificateWizzard extends Part, Comparable
 {
   /**
    * Liefert einen sprechenden Namen fuer den Wizzard bzw. das Zertifikat-Format.
@@ -70,6 +70,9 @@ public interface CreateCertificateWizzard extends Part
 
 /**********************************************************************
  * $Log: CreateCertificateWizzard.java,v $
+ * Revision 1.3  2009/10/15 11:50:42  willuhn
+ * @N Erste Schluessel-Erstellung via GUI und Wizzard funktioniert ;)
+ *
  * Revision 1.2  2009/10/14 23:58:17  willuhn
  * @N Erster Code fuer die Wizzards zum Erstellen neuer Zertifikate
  *

@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/wizzard/Attic/CreateWebserverCertificateWizzard.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/14 23:58:17 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/15 11:50:42 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -22,6 +22,7 @@ import de.willuhn.jameica.ca.store.template.Attribute;
 import de.willuhn.jameica.ca.store.template.Template;
 import de.willuhn.jameica.ca.store.template.WebserverTemplate;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
 
 /**
@@ -51,7 +52,7 @@ public class CreateWebserverCertificateWizzard extends AbstractCreateCertificate
     {
       this.hostname = new TextInput(null);
       this.hostname.setName(i18n.tr("Hostname"));
-      this.hostname.setComment(i18n.tr("Name auf den das Zertifikat ausgestellt wird (CN)"));
+      this.hostname.setComment(i18n.tr("Name, auf den das Zertifikat ausgestellt wird (CN)"));
       this.hostname.setMandatory(true);
       this.hostname.setMaxLength(255);
       
@@ -67,8 +68,12 @@ public class CreateWebserverCertificateWizzard extends AbstractCreateCertificate
    */
   public void paint(Composite parent) throws RemoteException
   {
-    // TODO Auto-generated method stub
-
+    super.paint(parent);
+    
+    SimpleContainer container = new SimpleContainer(parent);
+    container.addHeadline(i18n.tr("Eigenschaften des Webserver-Zertifikates"));
+    container.addInput(this.getHostname());
+    // TODO die weiteren Eingabefelder fehlen noch
   }
 
   /**
@@ -85,7 +90,7 @@ public class CreateWebserverCertificateWizzard extends AbstractCreateCertificate
     List<Attribute> attributes = t.getAttributes();
     attributes.add(new Attribute(Attribute.CN,hostname));
 
-    // TODO
+    // TODO restliche Attribute setzen
 //    attributes.add(new Attribute(Attribute.O,"willuhn software & services"));
 //    attributes.add(new Attribute(Attribute.OU,"Development"));
 //    attributes.add(new Attribute(Attribute.C,"DE"));
@@ -108,6 +113,9 @@ public class CreateWebserverCertificateWizzard extends AbstractCreateCertificate
 
 /**********************************************************************
  * $Log: CreateWebserverCertificateWizzard.java,v $
+ * Revision 1.2  2009/10/15 11:50:42  willuhn
+ * @N Erste Schluessel-Erstellung via GUI und Wizzard funktioniert ;)
+ *
  * Revision 1.1  2009/10/14 23:58:17  willuhn
  * @N Erster Code fuer die Wizzards zum Erstellen neuer Zertifikate
  *

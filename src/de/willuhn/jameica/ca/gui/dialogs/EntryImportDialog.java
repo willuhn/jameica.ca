@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/dialogs/EntryImportDialog.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/07 16:38:59 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/15 11:50:43 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -29,6 +29,7 @@ import de.willuhn.jameica.ca.store.format.Format;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.FileInput;
+import de.willuhn.jameica.gui.internal.buttons.Cancel;
 import de.willuhn.jameica.gui.util.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.Application;
@@ -122,16 +123,7 @@ public class EntryImportDialog extends AbstractDialog
       }
     },null,true);
     
-    buttons.addButton(i18n.tr("Abbrechen"),new Action()
-    {
-      /**
-       * @see de.willuhn.jameica.gui.Action#handleAction(java.lang.Object)
-       */
-      public void handleAction(Object context) throws ApplicationException
-      {
-        throw new OperationCanceledException("import cancelled");
-      }
-    });
+    buttons.addButton(new Cancel());
   }
   
   /**
@@ -204,6 +196,9 @@ public class EntryImportDialog extends AbstractDialog
 
 /**********************************************************************
  * $Log: EntryImportDialog.java,v $
+ * Revision 1.2  2009/10/15 11:50:43  willuhn
+ * @N Erste Schluessel-Erstellung via GUI und Wizzard funktioniert ;)
+ *
  * Revision 1.1  2009/10/07 16:38:59  willuhn
  * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
  *

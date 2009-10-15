@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/controller/EntryTreeControl.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/13 00:26:32 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/15 11:50:43 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -13,6 +13,7 @@
 
 package de.willuhn.jameica.ca.gui.controller;
 
+import de.willuhn.jameica.ca.gui.action.EntryView;
 import de.willuhn.jameica.ca.gui.part.EntryListTree;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -41,7 +42,7 @@ public class EntryTreeControl extends AbstractControl
   public EntryListTree getTree() throws Exception
   {
     if (this.tree == null)
-      this.tree = new EntryListTree(null); // TODO Keine Action angegeben
+      this.tree = new EntryListTree(new EntryView());
     return this.tree;
   }
 }
@@ -49,6 +50,9 @@ public class EntryTreeControl extends AbstractControl
 
 /**********************************************************************
  * $Log: EntryTreeControl.java,v $
+ * Revision 1.2  2009/10/15 11:50:43  willuhn
+ * @N Erste Schluessel-Erstellung via GUI und Wizzard funktioniert ;)
+ *
  * Revision 1.1  2009/10/13 00:26:32  willuhn
  * @N Tree-View fuer Zertifikate
  *

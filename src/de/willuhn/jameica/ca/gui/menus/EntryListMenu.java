@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/menus/EntryListMenu.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/13 00:26:32 $
+ * $Revision: 1.4 $
+ * $Date: 2009/10/15 11:50:43 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -14,15 +14,14 @@
 package de.willuhn.jameica.ca.gui.menus;
 
 import de.willuhn.jameica.ca.Plugin;
+import de.willuhn.jameica.ca.gui.action.EntryCreate;
 import de.willuhn.jameica.ca.gui.action.EntryDelete;
 import de.willuhn.jameica.ca.gui.action.EntryImport;
-import de.willuhn.jameica.ca.gui.model.ListItem;
-import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.ca.gui.action.EntryView;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
 import de.willuhn.jameica.system.Application;
-import de.willuhn.util.ApplicationException;
 import de.willuhn.util.I18N;
 
 /**
@@ -37,17 +36,11 @@ public class EntryListMenu extends ContextMenu
    */
   public EntryListMenu()
   {
+    this.addItem(new CheckedSingleContextMenuItem(i18n.tr("Schlüssel anzeigen..."),new EntryView(),"key-pub.png"));
     this.addItem(new ContextMenuItem(i18n.tr("Schlüssel importieren..."),new EntryImport(),"key-import.png"));
+    this.addItem(new ContextMenuItem(i18n.tr("Schlüssel erstellen..."),new EntryCreate(),"key-new.png"));
     this.addItem(ContextMenuItem.SEPARATOR);
-    this.addItem(new CheckedSingleContextMenuItem(i18n.tr("Schlüssel löschen..."),new Action()
-    {
-      public void handleAction(Object context) throws ApplicationException
-      {
-        if (context == null || !(context instanceof ListItem))
-          return;
-        new EntryDelete().handleAction(((ListItem)context).getEntry());
-      }
-    },"user-trash-full.png"));
+    this.addItem(new CheckedSingleContextMenuItem(i18n.tr("Schlüssel löschen..."),new EntryDelete(),"user-trash-full.png"));
   }
 
 }
@@ -55,6 +48,9 @@ public class EntryListMenu extends ContextMenu
 
 /**********************************************************************
  * $Log: EntryListMenu.java,v $
+ * Revision 1.4  2009/10/15 11:50:43  willuhn
+ * @N Erste Schluessel-Erstellung via GUI und Wizzard funktioniert ;)
+ *
  * Revision 1.3  2009/10/13 00:26:32  willuhn
  * @N Tree-View fuer Zertifikate
  *

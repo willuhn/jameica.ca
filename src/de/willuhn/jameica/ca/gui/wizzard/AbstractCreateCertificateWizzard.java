@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/wizzard/Attic/AbstractCreateCertificateWizzard.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/14 23:58:17 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/15 11:50:42 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -13,10 +13,13 @@
 
 package de.willuhn.jameica.ca.gui.wizzard;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import org.eclipse.swt.widgets.Composite;
 
 import de.willuhn.jameica.ca.Plugin;
 import de.willuhn.jameica.ca.service.StoreService;
@@ -25,6 +28,7 @@ import de.willuhn.jameica.ca.store.Store;
 import de.willuhn.jameica.ca.store.template.Template;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -34,7 +38,7 @@ import de.willuhn.util.I18N;
  * Abstrakte Basis-Implementierung, die von Implementierungen des Interfaces
  * {@link CreateCertificateWizzard} genutzt werden kann.
  */
-public abstract class AbstractCreateCertificateWizzard implements CreateCertificateWizzard
+public abstract class AbstractCreateCertificateWizzard implements CreateCertificateWizzard, Comparable
 {
   final static I18N i18n = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getI18N();
   
@@ -48,7 +52,7 @@ public abstract class AbstractCreateCertificateWizzard implements CreateCertific
    * Liefert ein Eingabefeld fuer das Beginn-Datum der Gueltigkeit.
    * @return Eingabefeld.
    */
-  DateInput getValidFrom()
+  private DateInput getValidFrom()
   {
     if (this.validFrom == null)
     {
@@ -65,7 +69,7 @@ public abstract class AbstractCreateCertificateWizzard implements CreateCertific
    * Liefert ein Eingabefeld fuer das End-Datum der Gueltigkeit.
    * @return Eingabefeld.
    */
-  DateInput getValidTo()
+  private DateInput getValidTo()
   {
     if (this.validTo == null)
     {
@@ -85,7 +89,7 @@ public abstract class AbstractCreateCertificateWizzard implements CreateCertific
    * Liefert eine Auswahlliste fuer moegliche Schluessellaengen.
    * @return Auswahlliste.
    */
-  SelectInput getKeySize()
+  private SelectInput getKeySize()
   {
     if (this.keySize == null)
     {
@@ -98,7 +102,6 @@ public abstract class AbstractCreateCertificateWizzard implements CreateCertific
       this.keySize = new SelectInput(values,Template.KEYSIZE_DEFAULT);
       this.keySize.setName(i18n.tr("Schlüssellänge"));
       this.keySize.setComment(i18n.tr("Angabe in Bytes"));
-      this.keySize.setEditable(true);
       this.keySize.setMandatory(true);
       this.keySize.setValidChars("1234567890");
     }
@@ -109,7 +112,7 @@ public abstract class AbstractCreateCertificateWizzard implements CreateCertific
    * Liefert eine Auswahlliste fuer die moeglichen Signatur-Algorithmen.
    * @return Auswahlliste.
    */
-  SelectInput getSignatureAlgorithm()
+  private SelectInput getSignatureAlgorithm()
   {
     if (this.signatureAlg == null)
     {
@@ -136,7 +139,7 @@ public abstract class AbstractCreateCertificateWizzard implements CreateCertific
    * Liefert eine Auswahlliste mit moeglichen Aussteller-Zertifikaten.
    * @return Auswahlliste.
    */
-  SelectInput getIssuer()
+  private SelectInput getIssuer()
   {
     if (this.issuer == null)
     {
@@ -165,7 +168,7 @@ public abstract class AbstractCreateCertificateWizzard implements CreateCertific
       this.issuer = new SelectInput(cacerts,null);
       this.issuer.setName(i18n.tr("Aussteller"));
       this.issuer.setComment(i18n.tr("Zertifikat des Ausstellers"));
-      this.issuer.setPleaseChoose(i18n.tr("kein Aussteller (selbstsigniertes Zertifikat"));
+      this.issuer.setPleaseChoose(i18n.tr("kein Aussteller (selbstsigniertes Zertifikat)"));
     }
     return this.issuer;
   }
@@ -182,7 +185,7 @@ public abstract class AbstractCreateCertificateWizzard implements CreateCertific
       throw new ApplicationException(i18n.tr("Bitte wählen Sie ein Datum für den Beginn der Gültigkeit aus"));
     t.setValidFrom(from);
 
-    Date to = (Date) this.getValidFrom().getValue();
+    Date to = (Date) this.getValidTo().getValue();
     if (to == null)
       throw new ApplicationException(i18n.tr("Bitte wählen Sie ein Datum für das Ende der Gültigkeit aus"));
     t.setValidTo(to);
@@ -202,16 +205,46 @@ public abstract class AbstractCreateCertificateWizzard implements CreateCertific
   }
   
   /**
+   * @see de.willuhn.jameica.gui.Part#paint(org.eclipse.swt.widgets.Composite)
+   */
+  public void paint(Composite parent) throws RemoteException
+  {
+    SimpleContainer dates = new SimpleContainer(parent);
+    dates.addHeadline(i18n.tr("Gültigkeit"));
+    dates.addInput(this.getValidFrom());
+    dates.addInput(this.getValidTo());
+    
+    SimpleContainer key = new SimpleContainer(parent);
+    key.addHeadline(i18n.tr("Schlüssel und Aussteller"));
+    key.addInput(this.getIssuer());
+    key.addInput(this.getSignatureAlgorithm());
+    key.addInput(this.getKeySize());
+  }
+
+  /**
    * Muss von abgeleiteten Klassen ueberschrieben werden, um initial die Instanz zu erzeugen.
    * @return initiale Instanz des Template-Objektes.
    * @throws ApplicationException
    */
   abstract Template _create() throws ApplicationException;
+
+  /**
+   * @see java.lang.Comparable#compareTo(java.lang.Object)
+   */
+  public int compareTo(Object o)
+  {
+    if (o == null || !(o instanceof CreateCertificateWizzard))
+      return -1;
+    return this.getName().compareTo(((CreateCertificateWizzard)o).getName());
+  }
 }
 
 
 /**********************************************************************
  * $Log: AbstractCreateCertificateWizzard.java,v $
+ * Revision 1.2  2009/10/15 11:50:42  willuhn
+ * @N Erste Schluessel-Erstellung via GUI und Wizzard funktioniert ;)
+ *
  * Revision 1.1  2009/10/14 23:58:17  willuhn
  * @N Erster Code fuer die Wizzards zum Erstellen neuer Zertifikate
  *
