@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/part/EntryListTable.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/10/13 00:26:32 $
+ * $Revision: 1.5 $
+ * $Date: 2009/10/15 15:25:25 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -111,13 +111,20 @@ public class EntryListTable extends TablePart
    */
   public synchronized void paint(Composite parent) throws RemoteException
   {
-    final MessageConsumer mc = new MyMessageConsumer();
-    // TODO: Messageconsumer fuer jameica.ca.entry.delete fehlt noch
-    Application.getMessagingFactory().getMessagingQueue("jameica.ca.entry.import").registerMessageConsumer(mc);
+    final MessageConsumer add = new MyMessageConsumer(true);
+    Application.getMessagingFactory().getMessagingQueue("jameica.ca.entry.import").registerMessageConsumer(add);
     parent.addDisposeListener(new DisposeListener() {
       public void widgetDisposed(DisposeEvent e)
       {
-        Application.getMessagingFactory().unRegisterMessageConsumer(mc);
+        Application.getMessagingFactory().getMessagingQueue("jameica.ca.entry.import").unRegisterMessageConsumer(add);
+      }
+    });
+    final MessageConsumer del = new MyMessageConsumer(false);
+    Application.getMessagingFactory().getMessagingQueue("jameica.ca.entry.delete").registerMessageConsumer(del);
+    parent.addDisposeListener(new DisposeListener() {
+      public void widgetDisposed(DisposeEvent e)
+      {
+        Application.getMessagingFactory().getMessagingQueue("jameica.ca.entry.delete").unRegisterMessageConsumer(del);
       }
     });
 
@@ -131,6 +138,17 @@ public class EntryListTable extends TablePart
    */
   private class MyMessageConsumer implements MessageConsumer
   {
+    boolean add = true;
+    
+    /**
+     * ct.
+     * @param add true fuer Hinzufuegen, false fuer Entfernen.
+     */
+    private MyMessageConsumer(boolean add)
+    {
+      this.add = add;
+    }
+    
     /**
      * @see de.willuhn.jameica.messaging.MessageConsumer#autoRegister()
      */
@@ -163,7 +181,10 @@ public class EntryListTable extends TablePart
         {
           try
           {
-            addItem(new ListItem((Entry)data));
+            if (add)
+              addItem(new ListItem((Entry)data));
+            else
+              removeItem(new ListItem((Entry)data));
             sort();
           }
           catch (Exception e)
@@ -181,6 +202,9 @@ public class EntryListTable extends TablePart
 
 /**********************************************************************
  * $Log: EntryListTable.java,v $
+ * Revision 1.5  2009/10/15 15:25:25  willuhn
+ * @N Reload des Tree nach Erstellen/Loeschen eines Schluessels
+ *
  * Revision 1.4  2009/10/13 00:26:32  willuhn
  * @N Tree-View fuer Zertifikate
  *

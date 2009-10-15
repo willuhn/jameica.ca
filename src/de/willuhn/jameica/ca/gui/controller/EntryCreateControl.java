@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/controller/EntryCreateControl.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/15 11:50:43 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/15 15:25:25 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -104,9 +104,7 @@ public class EntryCreateControl extends AbstractControl
           monitor.setPercentComplete(100);
           monitor.setStatusText(i18n.tr("Schlüssel erstellt"));
 
-          // TODO: Der Wizzard sollte nach Erstellung so geaendert werden, dass nichts mehr editiert werden kann.
-          // Hierzu koennte man entweder alle Eingabe-Felder readonly machen oder automatisch zurueck zur
-          // Schluessel-Liste springen.
+          // Wir wechseln zurueck zur Liste der Schluessel
           new EntryTree().handleAction(null);
         }
         catch (ApplicationException ae)
@@ -150,6 +148,9 @@ public class EntryCreateControl extends AbstractControl
 
 /**********************************************************************
  * $Log: EntryCreateControl.java,v $
+ * Revision 1.2  2009/10/15 15:25:25  willuhn
+ * @N Reload des Tree nach Erstellen/Loeschen eines Schluessels
+ *
  * Revision 1.1  2009/10/15 11:50:43  willuhn
  * @N Erste Schluessel-Erstellung via GUI und Wizzard funktioniert ;)
  *

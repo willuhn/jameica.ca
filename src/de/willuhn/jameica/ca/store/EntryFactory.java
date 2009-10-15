@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/EntryFactory.java,v $
- * $Revision: 1.7 $
- * $Date: 2009/10/07 16:38:59 $
+ * $Revision: 1.8 $
+ * $Date: 2009/10/15 15:25:25 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -173,7 +173,11 @@ public class EntryFactory
       Entry issuer = template.getIssuer();
 
 
-      if (monitor != null) monitor.setStatusText("creating key pair");
+      if (monitor != null)
+      {
+        monitor.addPercentComplete(5);
+        monitor.setStatusText("creating key pair");
+      }
       Logger.info("creating key pair");
       
 
@@ -225,8 +229,11 @@ public class EntryFactory
       List<Attribute> attributes = template.getAttributes();
       for (Attribute a:attributes)
       {
+        String value = a.getValue();
+        if (value == null || value.length() == 0)
+          continue;
         DERObjectIdentifier oid = new DERObjectIdentifier(a.getOid());
-        props.put(oid,a.getValue());
+        props.put(oid,value);
         order.add(oid);
       }
       generator.setSubjectDN(new X509Name(order,props));
@@ -329,6 +336,9 @@ public class EntryFactory
 
 /**********************************************************************
  * $Log: EntryFactory.java,v $
+ * Revision 1.8  2009/10/15 15:25:25  willuhn
+ * @N Reload des Tree nach Erstellen/Loeschen eines Schluessels
+ *
  * Revision 1.7  2009/10/07 16:38:59  willuhn
  * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
  *
