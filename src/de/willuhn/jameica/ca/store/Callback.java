@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Callback.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/06 16:36:00 $
+ * $Revision: 1.3 $
+ * $Date: 2009/10/19 11:51:56 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -12,6 +12,7 @@
  **********************************************************************/
 
 package de.willuhn.jameica.ca.store;
+
 
 /**
  * Callback-Interface fuer die Benutzer-Rueckfragen.
@@ -26,11 +27,27 @@ public interface Callback
    * @throws Exception
    */
   public char[] getPassword(Object context) throws Exception;
+  
+  /**
+   * Wird aufgerufen, wenn versucht wird, einen Schluessel zu speichern, welcher
+   * mit diesem Alias-Namen bereits existiert. Der User kann dann entscheiden,
+   * ob der alte Eintrag ueberschrieben werden soll.
+   * @param newEntry der neue hinzuzufuegende Schluessel.
+   * @param oldEntry der gleichnamige bereits existierende Schluessel.
+   * @return true, wenn der Schluessel ueberschrieben werden soll. false, wenn
+   * der neue Schluessel zusaetzlich (unter einem neuen Alias) gespeichert werden soll.
+   * @throws OperationCanceledException wenn der Import abgebrochen werden soll.
+   */
+  // TODO
+//  public boolean overwrite(Entry newEntry, Entry oldEntry) throws OperationCanceledException;
 }
 
 
 /**********************************************************************
  * $Log: Callback.java,v $
+ * Revision 1.3  2009/10/19 11:51:56  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.2  2009/10/06 16:36:00  willuhn
  * @N Extensions
  * @N PEM-Writer
