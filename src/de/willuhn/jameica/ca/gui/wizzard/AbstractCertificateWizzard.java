@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/wizzard/AbstractCertificateWizzard.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/15 22:55:29 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/22 17:27:08 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -16,25 +16,23 @@ package de.willuhn.jameica.ca.gui.wizzard;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
 
 import de.willuhn.jameica.ca.Plugin;
-import de.willuhn.jameica.ca.service.StoreService;
+import de.willuhn.jameica.ca.gui.input.SelectIssuerInput;
 import de.willuhn.jameica.ca.store.Entry;
-import de.willuhn.jameica.ca.store.Store;
 import de.willuhn.jameica.ca.store.template.Attribute;
 import de.willuhn.jameica.ca.store.template.Template;
 import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.Application;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.I18N;
 
@@ -50,7 +48,7 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
   private DateInput validTo        = null;
   private SelectInput keySize      = null;
   private SelectInput signatureAlg = null;
-  private SelectInput issuer       = null;
+  private SelectIssuerInput issuer = null;
 
   private TextInput cn = null;
   private TextInput o  = null;
@@ -146,41 +144,10 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
    * Liefert eine Auswahlliste mit moeglichen Aussteller-Zertifikaten.
    * @return Auswahlliste.
    */
-  SelectInput getIssuer()
+  Input getIssuer()
   {
     if (this.issuer == null)
-    {
-      List<Entry> cacerts = new ArrayList<Entry>();
-
-      try
-      {
-        // Wir holen uns die Liste der brauchbaren Aussteller-Zertifikate
-        StoreService service = (StoreService) Application.getServiceFactory().lookup(Plugin.class,"store");
-        Store store = service.getStore();
-
-        List<Entry> entries = store.getEntries();
-        for (Entry e:entries)
-        {
-          // Keine CA unc CA-Pruefung aktiv
-          if (Entry.CHECK_CA && !e.isCA())
-            continue;
-          
-          // Nur, wenn wir einen Private-Key zum Unterschreiben haben.
-          if (e.getPrivateKey() != null)
-            cacerts.add(e);
-        }
-        Collections.sort(cacerts);
-      }
-      catch (Exception e)
-      {
-        Logger.error("unable to load ca certs",e);
-      }
-
-      this.issuer = new SelectInput(cacerts,null);
-      this.issuer.setAttribute("commonName");
-      this.issuer.setName(i18n.tr("Aussteller"));
-      this.issuer.setPleaseChoose(i18n.tr("kein Aussteller (selbstsigniertes Zertifikat)"));
-    }
+      this.issuer = new SelectIssuerInput();
     return this.issuer;
   }
   
@@ -379,6 +346,9 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
 
 /**********************************************************************
  * $Log: AbstractCertificateWizzard.java,v $
+ * Revision 1.2  2009/10/22 17:27:08  willuhn
+ * @N Auswahl des Ausstellers via DialogInput
+ *
  * Revision 1.1  2009/10/15 22:55:29  willuhn
  * @N Wizzard zum Erstellen von Hibiscus Payment-Server Lizenzen
  *

@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/model/EntryTreeModel.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/13 00:26:32 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/22 17:27:08 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -36,7 +36,7 @@ public class EntryTreeModel
    * @return Liste der Schluessel.
    * @throws Exception
    */
-  public synchronized GenericIterator getItems() throws Exception
+  public GenericIterator getItems() throws Exception
   {
     List<ListItem> list = new ArrayList<ListItem>();
     StoreService service = (StoreService) Application.getServiceFactory().lookup(Plugin.class,"store");
@@ -55,6 +55,9 @@ public class EntryTreeModel
 
 /**********************************************************************
  * $Log: EntryTreeModel.java,v $
+ * Revision 1.2  2009/10/22 17:27:08  willuhn
+ * @N Auswahl des Ausstellers via DialogInput
+ *
  * Revision 1.1  2009/10/13 00:26:32  willuhn
  * @N Tree-View fuer Zertifikate
  *

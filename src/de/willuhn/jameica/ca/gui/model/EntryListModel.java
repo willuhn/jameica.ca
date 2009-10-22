@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/model/EntryListModel.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/10/13 00:26:32 $
+ * $Revision: 1.5 $
+ * $Date: 2009/10/22 17:27:08 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -14,6 +14,7 @@
 package de.willuhn.jameica.ca.gui.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import de.willuhn.jameica.ca.Plugin;
@@ -27,33 +28,64 @@ import de.willuhn.jameica.system.Application;
  */
 public class EntryListModel
 {
-  private List<ListItem> list = null;
-  
   /**
-   * Liefert eine Liste der Schluessel.
-   * @return Liste der Schluessel.
+   * Liefert eine Liste aller Schluessel.
+   * @return Liste aller Schluessel.
    * @throws Exception
    */
-  public synchronized List<ListItem> getItems() throws Exception
+  public List<ListItem> getItems() throws Exception
   {
-    if (this.list != null)
-      return this.list;
-    
-    this.list = new ArrayList<ListItem>();
+    List<ListItem> list = new ArrayList<ListItem>();
     StoreService service = (StoreService) Application.getServiceFactory().lookup(Plugin.class,"store");
     Store store = service.getStore();
     List<Entry> entries = store.getEntries();
     for (Entry e:entries)
     {
-      this.list.add(new ListItem(e));
+      list.add(new ListItem(e));
     }
-    return this.list;
+    return list;
+  }
+  
+  /**
+   * Liefert eine Liste der Schluessel, die als Aussteller taugen.
+   * @return Liste von aussteller-tauglichen Schluesseln.
+   * @throws Exception
+   */
+  public List<ListItem> getIssuer() throws Exception
+  {
+    // Wir holen uns erstmal alle und schmeissen dann die unbrauchbaren raus
+    List<ListItem> result = new ArrayList<ListItem>();
+    List<ListItem> all = this.getItems();
+    
+    for (ListItem i:all)
+    {
+      // Abgelaufen
+      Date validTo = i.getValidTo();
+      if (validTo != null && validTo.before(new Date()))
+        continue;
+
+      Entry e = i.getEntry();
+      
+      // Keine CA unc CA-Pruefung aktiv
+      if (Entry.CHECK_CA && !e.isCA())
+        continue;
+      
+      // Kein Private-Key zum Unterschreiben da
+      if (e.getPrivateKey() == null)
+        continue;
+
+      result.add(i);
+    }
+    return result;
   }
 }
 
 
 /**********************************************************************
  * $Log: EntryListModel.java,v $
+ * Revision 1.5  2009/10/22 17:27:08  willuhn
+ * @N Auswahl des Ausstellers via DialogInput
+ *
  * Revision 1.4  2009/10/13 00:26:32  willuhn
  * @N Tree-View fuer Zertifikate
  *

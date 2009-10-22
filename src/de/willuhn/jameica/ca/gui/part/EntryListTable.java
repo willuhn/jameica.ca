@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/part/EntryListTable.java,v $
- * $Revision: 1.5 $
- * $Date: 2009/10/15 15:25:25 $
+ * $Revision: 1.6 $
+ * $Date: 2009/10/22 17:27:08 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -15,6 +15,7 @@ package de.willuhn.jameica.ca.gui.part;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -50,13 +51,24 @@ public class EntryListTable extends TablePart
 
   /**
    * ct.
-   * @param action
+   * @param action Auszufuehrende Aktion bei Doppelklick.
    * @throws Exception
    */
   public EntryListTable(Action action) throws Exception
   {
-    super(new EntryListModel().getItems(),action);
+    this(new EntryListModel().getItems(),action);
+  }
 
+  /**
+   * ct.
+   * @param list Liste der Elemente.
+   * @param action
+   * @throws Exception
+   */
+  public EntryListTable(List<ListItem> items, Action action) throws Exception
+  {
+    super(items,action);
+    
     this.setContextMenu(new EntryListMenu());
     this.addColumn(i18n.tr("Ausgestellt für"),"subject");
     this.addColumn(i18n.tr("Organisation"),"organization");
@@ -202,6 +214,9 @@ public class EntryListTable extends TablePart
 
 /**********************************************************************
  * $Log: EntryListTable.java,v $
+ * Revision 1.6  2009/10/22 17:27:08  willuhn
+ * @N Auswahl des Ausstellers via DialogInput
+ *
  * Revision 1.5  2009/10/15 15:25:25  willuhn
  * @N Reload des Tree nach Erstellen/Loeschen eines Schluessels
  *
