@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/wizzard/CertificateWizzardCodeSign.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/15 22:55:29 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/22 17:28:16 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -44,7 +44,7 @@ public class CertificateWizzardCodeSign extends AbstractCertificateWizzard
     {
       this.cn = super.getCN();
       this.cn.setName(i18n.tr("Common-Name"));
-      this.cn.setValidChars("0123456789abcdefghijklmnopqrstuvwxyzüöäßABCDEFGHIJKLMNOPQRSTUVWXYZÜÖÄ.-+*");
+      this.cn.setValidChars("0123456789abcdefghijklmnopqrstuvwxyzüöäßABCDEFGHIJKLMNOPQRSTUVWXYZÜÖÄ.-+* ");
     }
     return this.cn;
   }
@@ -62,6 +62,9 @@ public class CertificateWizzardCodeSign extends AbstractCertificateWizzard
 
 /**********************************************************************
  * $Log: CertificateWizzardCodeSign.java,v $
+ * Revision 1.2  2009/10/22 17:28:16  willuhn
+ * @N Leerzeichen in CN erlauben
+ *
  * Revision 1.1  2009/10/15 22:55:29  willuhn
  * @N Wizzard zum Erstellen von Hibiscus Payment-Server Lizenzen
  *
