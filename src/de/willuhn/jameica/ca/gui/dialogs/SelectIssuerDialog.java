@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/dialogs/SelectIssuerDialog.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/22 17:27:08 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/26 14:47:48 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -47,7 +47,7 @@ public class SelectIssuerDialog extends AbstractDialog
   {
     super(position);
     super.setTitle(i18n.tr("Aussteller-Zertifikat"));
-    super.setSize(500,SWT.DEFAULT);
+    super.setSize(500,400);
   }
 
   /**
@@ -120,6 +120,9 @@ public class SelectIssuerDialog extends AbstractDialog
 
 /**********************************************************************
  * $Log: SelectIssuerDialog.java,v $
+ * Revision 1.2  2009/10/26 14:47:48  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.1  2009/10/22 17:27:08  willuhn
  * @N Auswahl des Ausstellers via DialogInput
  *
