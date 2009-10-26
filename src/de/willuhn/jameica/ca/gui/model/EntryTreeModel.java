@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/model/EntryTreeModel.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/22 17:27:08 $
+ * $Revision: 1.3 $
+ * $Date: 2009/10/26 23:40:37 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -44,7 +44,7 @@ public class EntryTreeModel
     List<Entry> entries = store.getEntries();
     for (Entry e:entries)
     {
-      if (e.isCA() || e.getIssuer() == null)
+      if ((Entry.CHECK_CA && e.isCA()) || e.getIssuer() == null)
         list.add(new ListItem(e));
     }
     
@@ -55,6 +55,9 @@ public class EntryTreeModel
 
 /**********************************************************************
  * $Log: EntryTreeModel.java,v $
+ * Revision 1.3  2009/10/26 23:40:37  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.2  2009/10/22 17:27:08  willuhn
  * @N Auswahl des Ausstellers via DialogInput
  *
