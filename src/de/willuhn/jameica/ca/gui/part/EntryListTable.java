@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/part/EntryListTable.java,v $
- * $Revision: 1.6 $
- * $Date: 2009/10/22 17:27:08 $
+ * $Revision: 1.7 $
+ * $Date: 2009/10/26 23:49:45 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -61,7 +61,7 @@ public class EntryListTable extends TablePart
 
   /**
    * ct.
-   * @param list Liste der Elemente.
+   * @param items Liste der Elemente.
    * @param action
    * @throws Exception
    */
@@ -214,6 +214,9 @@ public class EntryListTable extends TablePart
 
 /**********************************************************************
  * $Log: EntryListTable.java,v $
+ * Revision 1.7  2009/10/26 23:49:45  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.6  2009/10/22 17:27:08  willuhn
  * @N Auswahl des Ausstellers via DialogInput
  *
