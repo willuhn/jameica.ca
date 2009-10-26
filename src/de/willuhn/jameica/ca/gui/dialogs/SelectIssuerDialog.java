@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/dialogs/SelectIssuerDialog.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/26 14:47:48 $
+ * $Revision: 1.4 $
+ * $Date: 2009/10/26 14:50:36 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -13,7 +13,6 @@
 
 package de.willuhn.jameica.ca.gui.dialogs;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.willuhn.jameica.ca.Plugin;
@@ -63,7 +62,7 @@ public class SelectIssuerDialog extends AbstractDialog
    */
   protected void paint(Composite parent) throws Exception
   {
-    SimpleContainer container = new SimpleContainer(parent.getParent());
+    SimpleContainer container = new SimpleContainer(parent.getParent(),true);
     container.addText(i18n.tr("Bitte wählen Sie das Aussteller-Zertifikate aus, mit dem der neue " +
     		                      "Schlüssel signiert werden soll.\nKlicken Sie alternativ auf \"Kein Aussteller\" wenn" +
     		                      "Sie ein selbstsigniertes Zertifikate erstellen möchten."),true);
@@ -120,6 +119,12 @@ public class SelectIssuerDialog extends AbstractDialog
 
 /**********************************************************************
  * $Log: SelectIssuerDialog.java,v $
+ * Revision 1.4  2009/10/26 14:50:36  willuhn
+ * *** empty log message ***
+ *
+ * Revision 1.3  2009/10/26 14:49:00  willuhn
+ * *** empty log message ***
+ *
  * Revision 1.2  2009/10/26 14:47:48  willuhn
  * *** empty log message ***
  *
