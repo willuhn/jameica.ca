@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/wizzard/AbstractCertificateWizzard.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/22 17:27:08 $
+ * $Revision: 1.3 $
+ * $Date: 2009/10/26 23:48:49 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -57,6 +57,14 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
   private TextInput l  = null;
   private TextInput st = null;
   
+  /**
+   * @see de.willuhn.jameica.ca.gui.wizzard.CertificateWizzard#isEnabled()
+   */
+  public boolean isEnabled()
+  {
+    return true;
+  }
+
   /**
    * Liefert ein Eingabefeld fuer das Beginn-Datum der Gueltigkeit.
    * @return Eingabefeld.
@@ -346,6 +354,9 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
 
 /**********************************************************************
  * $Log: AbstractCertificateWizzard.java,v $
+ * Revision 1.3  2009/10/26 23:48:49  willuhn
+ * @N Payment-Server-Wizzard ausblenden, wenn CA nicht vorhanden
+ *
  * Revision 1.2  2009/10/22 17:27:08  willuhn
  * @N Auswahl des Ausstellers via DialogInput
  *

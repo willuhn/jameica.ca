@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/wizzard/CertificateWizzardHibiscusLicense.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/15 22:55:29 $
+ * $Revision: 1.2 $
+ * $Date: 2009/10/26 23:48:49 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -55,6 +55,14 @@ public class CertificateWizzardHibiscusLicense extends CertificateWizzardCodeSig
   }
   
   /**
+   * @see de.willuhn.jameica.ca.gui.wizzard.AbstractCertificateWizzard#isEnabled()
+   */
+  public boolean isEnabled()
+  {
+    return this.getIssuerEntry() != null;
+  }
+
+  /**
    * @see de.willuhn.jameica.ca.gui.wizzard.AbstractCertificateWizzard#getCN()
    */
   TextInput getCN()
@@ -80,28 +88,10 @@ public class CertificateWizzardHibiscusLicense extends CertificateWizzardCodeSig
     {
       List<Entry> certs = new ArrayList<Entry>();
 
-      try
-      {
-        StoreService service = (StoreService) Application.getServiceFactory().lookup(Plugin.class,"store");
-        Store store = service.getStore();
-
-        List<Entry> entries = store.getEntries();
-        for (Entry e:entries)
-        {
-          String cn = e.getCommonName();
-          if (cn != null && cn.equals("willuhn.ca.licensing"))
-          {
-            certs.add(e);
-            break;
-          }
-        }
-      }
-      catch (Exception e)
-      {
-        Logger.error("unable to load ca certs",e);
-      }
-      
-      if (certs.size() == 0)
+      Entry e = getIssuerEntry();
+      if (e != null)
+        certs.add(e);
+      else
         Application.getMessagingFactory().sendMessage(new StatusBarMessage(i18n.tr("Aussteller-Zertifikat nicht gefunden"),StatusBarMessage.TYPE_ERROR));
 
       this.issuer = new SelectInput(certs,null);
@@ -112,6 +102,31 @@ public class CertificateWizzardHibiscusLicense extends CertificateWizzardCodeSig
     return this.issuer;
   }
 
+  /**
+   * Liefert das benoetigte Aussteller-Zertifikat.
+   * @return das benoetigte Aussteller-Zertifikat.
+   */
+  private Entry getIssuerEntry()
+  {
+    try
+    {
+      StoreService service = (StoreService) Application.getServiceFactory().lookup(Plugin.class,"store");
+      Store store = service.getStore();
+
+      List<Entry> entries = store.getEntries();
+      for (Entry e:entries)
+      {
+        String cn = e.getCommonName();
+        if (cn != null && cn.equals("willuhn.ca.licensing"))
+          return e;
+      }
+    }
+    catch (Exception e)
+    {
+      Logger.error("unable to load ca certs",e);
+    }
+    return null;
+  }
   /**
    * @see de.willuhn.jameica.ca.gui.wizzard.AbstractCertificateWizzard#getO()
    */
@@ -203,6 +218,9 @@ public class CertificateWizzardHibiscusLicense extends CertificateWizzardCodeSig
 
 /**********************************************************************
  * $Log: CertificateWizzardHibiscusLicense.java,v $
+ * Revision 1.2  2009/10/26 23:48:49  willuhn
+ * @N Payment-Server-Wizzard ausblenden, wenn CA nicht vorhanden
+ *
  * Revision 1.1  2009/10/15 22:55:29  willuhn
  * @N Wizzard zum Erstellen von Hibiscus Payment-Server Lizenzen
  *

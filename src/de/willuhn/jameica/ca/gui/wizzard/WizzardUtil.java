@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/wizzard/WizzardUtil.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/15 22:55:29 $
+ * $Revision: 1.3 $
+ * $Date: 2009/10/26 23:48:49 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -43,7 +43,9 @@ public class WizzardUtil
       {
         try
         {
-          list.add(c.newInstance());
+          CertificateWizzard w = c.newInstance();
+          if (w.isEnabled())
+            list.add(w);
         }
         catch (Exception e)
         {
@@ -65,6 +67,9 @@ public class WizzardUtil
 
 /**********************************************************************
  * $Log: WizzardUtil.java,v $
+ * Revision 1.3  2009/10/26 23:48:49  willuhn
+ * @N Payment-Server-Wizzard ausblenden, wenn CA nicht vorhanden
+ *
  * Revision 1.2  2009/10/15 22:55:29  willuhn
  * @N Wizzard zum Erstellen von Hibiscus Payment-Server Lizenzen
  *
