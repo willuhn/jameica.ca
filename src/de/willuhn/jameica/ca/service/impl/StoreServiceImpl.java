@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/service/impl/StoreServiceImpl.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/10/07 16:38:59 $
+ * $Revision: 1.5 $
+ * $Date: 2009/10/27 16:47:20 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -16,13 +16,15 @@ package de.willuhn.jameica.ca.service.impl;
 import java.io.File;
 import java.rmi.RemoteException;
 
+import de.willuhn.jameica.ca.CallbackConsole;
+import de.willuhn.jameica.ca.CallbackGui;
 import de.willuhn.jameica.ca.Plugin;
 import de.willuhn.jameica.ca.service.StoreService;
 import de.willuhn.jameica.ca.store.Callback;
 import de.willuhn.jameica.ca.store.Entry;
 import de.willuhn.jameica.ca.store.Store;
-import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 
 /**
@@ -79,6 +81,8 @@ public class StoreServiceImpl implements StoreService
     {
       String dir = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getWorkPath();
       final File file = new File(dir,"jameica.ca.keystore");
+      
+      final Callback cb = Application.inServerMode() ? new CallbackConsole() : new CallbackGui();
       this.store = new Store(file,new Callback()
       {
         /**
@@ -90,13 +94,15 @@ public class StoreServiceImpl implements StoreService
           if (context != null && (context.equals(file) || (context instanceof Entry)))
             return Application.getCallback().getPassword().toCharArray();
           
-          // Wir fragen den User
-          QueryMessage msg = new QueryMessage(context);
-          Application.getMessagingFactory().getMessagingQueue("jameica.ca.callback.password").sendSyncMessage(msg);
-          Object data = msg.getData();
-          if (data != null && (data instanceof char[]))
-            return (char[]) data;
-          return new char[0];
+          return cb.getPassword(context);
+        }
+
+        /**
+         * @see de.willuhn.jameica.ca.store.Callback#overwrite(de.willuhn.jameica.ca.store.Entry, de.willuhn.jameica.ca.store.Entry)
+         */
+        public boolean overwrite(Entry newEntry, Entry oldEntry) throws OperationCanceledException
+        {
+          return cb.overwrite(newEntry,oldEntry);
         }
       });
     }
@@ -125,6 +131,10 @@ public class StoreServiceImpl implements StoreService
 
 /**********************************************************************
  * $Log: StoreServiceImpl.java,v $
+ * Revision 1.5  2009/10/27 16:47:20  willuhn
+ * @N Support zum Ueberschreiben/als Kopie anlegen beim Import
+ * @N Integration in Jameica-Suche
+ *
  * Revision 1.4  2009/10/07 16:38:59  willuhn
  * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
  *

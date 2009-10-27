@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Store.java,v $
- * $Revision: 1.5 $
- * $Date: 2009/10/14 17:20:50 $
+ * $Revision: 1.6 $
+ * $Date: 2009/10/27 16:47:20 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 
 /**
@@ -116,7 +117,33 @@ public class Store
 
     String name = entry.getAlias();
     if (name == null)
-      name = cert.getSubjectDN().getName();
+      name = cert.getSubjectDN().getName().toLowerCase(); // der keystore macht intern ein tolower
+    
+    // Checken, ob wir mit diesem Alias schon einen Eintrag haben
+    boolean overwrite = true;
+    
+    List<Entry> list = this.getEntries();
+    for (Entry e:list)
+    {
+      if (e.getAlias().equals(name))
+      {
+        try
+        {
+          Logger.info("entry " + name + " allready exists");
+          overwrite = this.callback.overwrite(entry,e);
+          Logger.info("overwrite: " + overwrite);
+        }
+        catch (OperationCanceledException oce)
+        {
+          Logger.info("operation cancelled");
+          return;
+        }
+        break;
+      }
+    }
+    
+    if (!overwrite)
+      name += ("-" + String.valueOf(System.currentTimeMillis())); // sollte eindeutig genug sein
 
     PrivateKey key = entry.getPrivateKey();
     if (key == null)
@@ -226,6 +253,10 @@ public class Store
 
 /**********************************************************************
  * $Log: Store.java,v $
+ * Revision 1.6  2009/10/27 16:47:20  willuhn
+ * @N Support zum Ueberschreiben/als Kopie anlegen beim Import
+ * @N Integration in Jameica-Suche
+ *
  * Revision 1.5  2009/10/14 17:20:50  willuhn
  * *** empty log message ***
  *

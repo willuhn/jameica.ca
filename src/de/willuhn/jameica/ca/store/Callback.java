@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Callback.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/19 11:51:56 $
+ * $Revision: 1.4 $
+ * $Date: 2009/10/27 16:47:20 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -12,6 +12,8 @@
  **********************************************************************/
 
 package de.willuhn.jameica.ca.store;
+
+import de.willuhn.jameica.system.OperationCanceledException;
 
 
 /**
@@ -38,13 +40,16 @@ public interface Callback
    * der neue Schluessel zusaetzlich (unter einem neuen Alias) gespeichert werden soll.
    * @throws OperationCanceledException wenn der Import abgebrochen werden soll.
    */
-  // TODO
-//  public boolean overwrite(Entry newEntry, Entry oldEntry) throws OperationCanceledException;
+  public boolean overwrite(Entry newEntry, Entry oldEntry) throws OperationCanceledException;
 }
 
 
 /**********************************************************************
  * $Log: Callback.java,v $
+ * Revision 1.4  2009/10/27 16:47:20  willuhn
+ * @N Support zum Ueberschreiben/als Kopie anlegen beim Import
+ * @N Integration in Jameica-Suche
+ *
  * Revision 1.3  2009/10/19 11:51:56  willuhn
  * *** empty log message ***
  *

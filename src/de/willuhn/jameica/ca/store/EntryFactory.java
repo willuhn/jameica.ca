@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/EntryFactory.java,v $
- * $Revision: 1.8 $
- * $Date: 2009/10/15 15:25:25 $
+ * $Revision: 1.9 $
+ * $Date: 2009/10/27 16:47:20 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -103,8 +103,27 @@ public class EntryFactory
       if (privateKey != null)
       {
         is = new BufferedInputStream(new FileInputStream(privateKey));
-        char[] password = this.callback.getPassword(privateKey);
-        e.setPrivateKey(format.readPrivateKey(is,password));
+        PrivateKey key = null;
+        
+        // Wir versuchen es erstmal mit einem leeren Passwort.
+        // Das wird bei Webserver-Zertifikaten haeufig so gemacht.
+        // Wenn das fehlschlaegt, koennen wir den User allemal noch fragen
+        try
+        {
+          Logger.info("trying to read " + privateKey + " with empty password");
+          key = format.readPrivateKey(is,new char[0]);
+          
+          // Wir machen noch einen Test zur sicherheit
+          if (key.getEncoded().length == 0)
+            throw new Exception();
+        }
+        catch (Exception ex)
+        {
+          Logger.info(privateKey + " seems to have a password, asking user");
+          key = format.readPrivateKey(is,this.callback.getPassword(privateKey));
+        }
+        
+        e.setPrivateKey(key);
         is.close();
         is = null;
       }
@@ -336,6 +355,10 @@ public class EntryFactory
 
 /**********************************************************************
  * $Log: EntryFactory.java,v $
+ * Revision 1.9  2009/10/27 16:47:20  willuhn
+ * @N Support zum Ueberschreiben/als Kopie anlegen beim Import
+ * @N Integration in Jameica-Suche
+ *
  * Revision 1.8  2009/10/15 15:25:25  willuhn
  * @N Reload des Tree nach Erstellen/Loeschen eines Schluessels
  *
