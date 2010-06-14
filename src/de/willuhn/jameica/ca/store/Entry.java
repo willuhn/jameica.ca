@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Entry.java,v $
- * $Revision: 1.6 $
- * $Date: 2010/06/14 08:32:17 $
+ * $Revision: 1.7 $
+ * $Date: 2010/06/14 08:41:42 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -121,6 +121,18 @@ public class Entry implements Comparable
     if (c == null)
       return null;
     return new Certificate(c).getSubject().getAttribute(Principal.COMMON_NAME);
+  }
+  
+  /**
+   * Organisation des Inhabers.
+   * @return Liefert das O-Attribut des Inhabers.
+   */
+  public String getOrganization()
+  {
+    X509Certificate c = this.getCertificate();
+    if (c == null)
+      return null;
+    return new Certificate(c).getSubject().getAttribute(Principal.ORGANIZATION);
   }
   
   /**
@@ -271,15 +283,27 @@ public class Entry implements Comparable
       return -1;
     
     Entry e = (Entry) o;
-    String cn1 = this.getCommonName();
-    if (cn1 == null || cn1.length() == 0)
-      return -1;
     
-    String cn2 = e.getCommonName();
-    if (cn2 == null || cn2.length() == 0)
-      return 1;
+    int i = compare(this.getCommonName(),e.getCommonName());
+    if (i != 0)
+      return i;
     
-    return cn1.compareTo(cn2);
+    // CN ist identisch, dann vergleichen wir stattdessen O
+    return compare(this.getOrganization(),e.getOrganization());
+  }
+  
+  /**
+   * Vergleicht die beiden Strings NULL-sicher.
+   * @param s1 String 1.
+   * @param s2 String 2.
+   * @return der Vergleichswert.
+   */
+  private int compare(String s1, String s2)
+  {
+    if (s1 == null || s1.length() == 0) return -1;
+    if (s2 == null || s2.length() == 0) return 1;
+    
+    return s1.compareTo(s2);
   }
 
   /**
@@ -339,6 +363,9 @@ public class Entry implements Comparable
 
 /**********************************************************************
  * $Log: Entry.java,v $
+ * Revision 1.7  2010/06/14 08:41:42  willuhn
+ * @N Attribut "O" vergleichen, wenn "CN" identisch ist
+ *
  * Revision 1.6  2010/06/14 08:32:17  willuhn
  * @N Zertifikate alphabetisch sortieren
  *
