@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Entry.java,v $
- * $Revision: 1.5 $
- * $Date: 2009/10/15 22:55:29 $
+ * $Revision: 1.6 $
+ * $Date: 2010/06/14 08:32:17 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -17,6 +17,7 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.security.auth.x500.X500Principal;
@@ -257,6 +258,7 @@ public class Entry implements Comparable
       }
     }
     
+    Collections.sort(children);
     return children;
   }
 
@@ -337,6 +339,9 @@ public class Entry implements Comparable
 
 /**********************************************************************
  * $Log: Entry.java,v $
+ * Revision 1.6  2010/06/14 08:32:17  willuhn
+ * @N Zertifikate alphabetisch sortieren
+ *
  * Revision 1.5  2009/10/15 22:55:29  willuhn
  * @N Wizzard zum Erstellen von Hibiscus Payment-Server Lizenzen
  *

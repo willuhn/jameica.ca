@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/model/ListItem.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/15 17:04:48 $
+ * $Revision: 1.3 $
+ * $Date: 2010/06/14 08:32:18 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -30,7 +30,7 @@ import de.willuhn.jameica.security.Principal;
 /**
  * Implementiert eine einzelne Zeile.
  */
-public class ListItem implements GenericObjectNode
+public class ListItem implements GenericObjectNode, Comparable
 {
   private Entry entry = null;
   
@@ -265,10 +265,21 @@ public class ListItem implements GenericObjectNode
   {
     return "subject";
   }
+
+  /**
+   * @see java.lang.Comparable#compareTo(java.lang.Object)
+   */
+  public int compareTo(Object o)
+  {
+    return this.entry.compareTo(o);
+  }
 }
 
 /**********************************************************************
  * $Log: ListItem.java,v $
+ * Revision 1.3  2010/06/14 08:32:18  willuhn
+ * @N Zertifikate alphabetisch sortieren
+ *
  * Revision 1.2  2009/10/15 17:04:48  willuhn
  * *** empty log message ***
  *

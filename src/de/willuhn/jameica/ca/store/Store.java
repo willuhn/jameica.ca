@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Store.java,v $
- * $Revision: 1.6 $
- * $Date: 2009/10/27 16:47:20 $
+ * $Revision: 1.7 $
+ * $Date: 2010/06/14 08:32:17 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -24,6 +24,7 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -187,6 +188,7 @@ public class Store
 
       list.add(entry);
     }
+    Collections.sort(list);
     return list;
   }
   
@@ -253,6 +255,9 @@ public class Store
 
 /**********************************************************************
  * $Log: Store.java,v $
+ * Revision 1.7  2010/06/14 08:32:17  willuhn
+ * @N Zertifikate alphabetisch sortieren
+ *
  * Revision 1.6  2009/10/27 16:47:20  willuhn
  * @N Support zum Ueberschreiben/als Kopie anlegen beim Import
  * @N Integration in Jameica-Suche
