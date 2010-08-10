@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Entry.java,v $
- * $Revision: 1.7 $
- * $Date: 2010/06/14 08:41:42 $
+ * $Revision: 1.8 $
+ * $Date: 2010/08/10 13:57:18 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -38,11 +38,16 @@ public class Entry implements Comparable
    */
   public final static boolean CHECK_CA = false;
   
-  private Store store          = null;
+  private Store store            = null;
 
-  private String alias         = null;
-  private X509Certificate cert = null;
-  private PrivateKey key       = null;
+  private String alias           = null;
+  private X509Certificate cert   = null;
+  private PrivateKey key         = null;
+  
+  private Entry issuer           = null;
+  private boolean issuerChecked  = false;
+  
+  private List<Entry> clients    = null;
   
   /**
    * ct.
@@ -160,6 +165,11 @@ public class Entry implements Comparable
    */
   public Entry getIssuer() throws Exception
   {
+    if (this.issuer != null || this.issuerChecked)
+      return this.issuer;
+
+    this.issuerChecked = true;
+    
     X509Certificate x = this.getCertificate();
     X500Principal issuer = x.getIssuerX500Principal();
 
@@ -188,7 +198,10 @@ public class Entry implements Comparable
         // ob wir sie im Keystore finden.
         byte[] test = e.getCertificate().getPublicKey().getEncoded();
         if (Arrays.equals(issuerSig,test))
+        {
+          this.issuer = e;
           return e; // gefunden
+        }
       }
     }
 
@@ -200,7 +213,10 @@ public class Entry implements Comparable
 
       X500Principal subject = e.getCertificate().getSubjectX500Principal();
       if (subject.equals(issuer))
+      {
+        this.issuer = e;
         return e;
+      }
     }
     
     // nichts gefunden
@@ -225,10 +241,13 @@ public class Entry implements Comparable
    */
   public List<Entry> getClients() throws Exception
   {
-    List<Entry> children = new ArrayList<Entry>();
+    if (this.clients != null)
+      return this.clients;
+    
+    this.clients = new ArrayList<Entry>();
 
     if (CHECK_CA && !this.isCA())
-      return children;
+      return this.clients;
 
     X509Certificate x = this.getCertificate();
     
@@ -254,7 +273,7 @@ public class Entry implements Comparable
         if (Arrays.equals(issuerSig,sig))
         {
           // jepp, passt
-          children.add(e);
+          this.clients.add(e);
           continue;
         }
       }
@@ -265,13 +284,13 @@ public class Entry implements Comparable
       // passt, nehmen wir auch
       if (p != null && p.equals(self))
       {
-        children.add(e);
+        this.clients.add(e);
         continue;
       }
     }
     
-    Collections.sort(children);
-    return children;
+    Collections.sort(this.clients);
+    return this.clients;
   }
 
   /**
@@ -363,6 +382,9 @@ public class Entry implements Comparable
 
 /**********************************************************************
  * $Log: Entry.java,v $
+ * Revision 1.8  2010/08/10 13:57:18  willuhn
+ * @N Cachen der Zertifikate - beschleunigt die Ladezeiten enorm
+ *
  * Revision 1.7  2010/06/14 08:41:42  willuhn
  * @N Attribut "O" vergleichen, wenn "CN" identisch ist
  *

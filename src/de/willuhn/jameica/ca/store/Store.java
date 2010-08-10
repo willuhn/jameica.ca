@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Store.java,v $
- * $Revision: 1.7 $
- * $Date: 2010/06/14 08:32:17 $
+ * $Revision: 1.8 $
+ * $Date: 2010/08/10 13:57:18 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -41,6 +41,8 @@ public class Store
   private KeyStore keystore    = null;
   private Callback callback    = null;
   private EntryFactory factory = null;
+  
+  private List<Entry> entries  = null;
 
   /**
    * ct.
@@ -173,7 +175,10 @@ public class Store
    */
   public List<Entry> getEntries() throws Exception
   {
-    List<Entry> list = new ArrayList<Entry>();
+    if (this.entries != null)
+      return this.entries;
+
+    this.entries = new ArrayList<Entry>();
 
     Enumeration<String> e = this.keystore.aliases();
     while (e.hasMoreElements())
@@ -186,10 +191,10 @@ public class Store
       if (this.keystore.containsAlias(alias))
         entry.setCertificate((X509Certificate) this.keystore.getCertificate(alias));
 
-      list.add(entry);
+      this.entries.add(entry);
     }
-    Collections.sort(list);
-    return list;
+    Collections.sort(this.entries);
+    return this.entries;
   }
   
   /**
@@ -219,6 +224,7 @@ public class Store
           Logger.error("error while closing " + file,e);
         }
       }
+      this.entries = null; // forciert das Neu-Laden
     }
   }
   
@@ -255,6 +261,9 @@ public class Store
 
 /**********************************************************************
  * $Log: Store.java,v $
+ * Revision 1.8  2010/08/10 13:57:18  willuhn
+ * @N Cachen der Zertifikate - beschleunigt die Ladezeiten enorm
+ *
  * Revision 1.7  2010/06/14 08:32:17  willuhn
  * @N Zertifikate alphabetisch sortieren
  *
