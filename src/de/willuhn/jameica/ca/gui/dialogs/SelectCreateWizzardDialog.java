@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/dialogs/SelectCreateWizzardDialog.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/15 22:55:29 $
+ * $Revision: 1.3 $
+ * $Date: 2010/08/10 12:14:24 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -12,6 +12,8 @@
  **********************************************************************/
 
 package de.willuhn.jameica.ca.gui.dialogs;
+
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -29,6 +31,7 @@ import de.willuhn.jameica.gui.util.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.I18N;
 
@@ -37,7 +40,9 @@ import de.willuhn.util.I18N;
  */
 public class SelectCreateWizzardDialog extends AbstractDialog
 {
+  private final static Settings settings = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getSettings();
   private final static I18N i18n = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getI18N();
+  private final static int WINDOW_WIDTH = 400;
 
   private CertificateWizzard wizzard = null;
   
@@ -48,7 +53,7 @@ public class SelectCreateWizzardDialog extends AbstractDialog
   public SelectCreateWizzardDialog(int position)
   {
     super(position);
-    this.setSize(400,SWT.DEFAULT);
+    this.setSize(WINDOW_WIDTH,SWT.DEFAULT);
     this.setTitle(i18n.tr("Assistent zur Erstellung eines Schlüssels"));
   }
 
@@ -77,7 +82,21 @@ public class SelectCreateWizzardDialog extends AbstractDialog
     c.addText(i18n.tr("Bitte wählen Sie den Assistenten aus, den Sie zur Erstellung des " +
     		              "neuen Schlüssels nutzen möchten."),true);
     
-    final SelectInput select = new SelectInput(WizzardUtil.getWizzards(),null);
+    String lastUsed = settings.getString("wizzard.last",null);
+    List<CertificateWizzard> list = WizzardUtil.getWizzards();
+    CertificateWizzard last = null;
+    if (lastUsed != null && lastUsed.length() > 0)
+    {
+      for (CertificateWizzard w:list)
+      {
+        if (w.getClass().getName().equals(lastUsed))
+        {
+          last = w;
+          break;
+        }
+      }
+    }
+    final SelectInput select = new SelectInput(list,last);
     select.setAttribute("name");
     select.setName(i18n.tr("Assistent"));
     select.setPleaseChoose(i18n.tr("Bitte wählen..."));
@@ -94,10 +113,12 @@ public class SelectCreateWizzardDialog extends AbstractDialog
           return;
         
         wizzard = selected;
+        settings.setAttribute("wizzard.last",wizzard.getClass().getName());
         close();
       }
     },null,true,"ok.png");
     buttons.addButton(new Cancel());
+    getShell().setMinimumSize(getShell().computeSize(WINDOW_WIDTH,SWT.DEFAULT));
   }
 
 }
@@ -105,6 +126,10 @@ public class SelectCreateWizzardDialog extends AbstractDialog
 
 /**********************************************************************
  * $Log: SelectCreateWizzardDialog.java,v $
+ * Revision 1.3  2010/08/10 12:14:24  willuhn
+ * @B Dialog-Groesse
+ * @N Automatische Vorauswahl des letzten Wizzards
+ *
  * Revision 1.2  2009/10/15 22:55:29  willuhn
  * @N Wizzard zum Erstellen von Hibiscus Payment-Server Lizenzen
  *
