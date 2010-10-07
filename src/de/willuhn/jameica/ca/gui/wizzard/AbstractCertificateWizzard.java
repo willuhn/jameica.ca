@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/wizzard/AbstractCertificateWizzard.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/26 23:48:49 $
+ * $Revision: 1.4 $
+ * $Date: 2010/10/07 12:20:39 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -56,6 +56,7 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
   private TextInput c  = null;
   private TextInput l  = null;
   private TextInput st = null;
+  private TextInput bc = null;
   
   /**
    * @see de.willuhn.jameica.ca.gui.wizzard.CertificateWizzard#isEnabled()
@@ -251,6 +252,22 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
     }
     return this.l;
   }
+
+  /**
+   * Liefert ein Eingabefeld fuer die Business-Kategorie.
+   * @return Eingabefeld.
+   */
+  TextInput getBC()
+  {
+    if (this.bc == null)
+    {
+      this.bc = createTemplate();
+      this.bc.setName(i18n.tr("Business-Kategorie"));
+      this.bc.setComment("");
+    }
+    return this.bc;
+  }
+
   /**
    * Erstellt ein Default-Eingabefeld.
    * @return Default-Eingabefeld.
@@ -302,6 +319,11 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
     attributes.add(new Attribute(Attribute.C,(String) getC().getValue()));
     attributes.add(new Attribute(Attribute.ST,(String) getST().getValue()));
     attributes.add(new Attribute(Attribute.L,(String) getL().getValue()));
+    
+    String bc = (String) getBC().getValue();
+    if (bc != null && bc.length() > 0)
+      attributes.add(new Attribute(Attribute.BC,bc));
+      
     return t;
   }
   
@@ -331,6 +353,7 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
     container.addInput(this.getC());
     container.addInput(this.getST());
     container.addInput(this.getL());
+    container.addInput(this.getBC());
   }
 
   /**
@@ -354,6 +377,9 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
 
 /**********************************************************************
  * $Log: AbstractCertificateWizzard.java,v $
+ * Revision 1.4  2010/10/07 12:20:39  willuhn
+ * @N Business-Category
+ *
  * Revision 1.3  2009/10/26 23:48:49  willuhn
  * @N Payment-Server-Wizzard ausblenden, wenn CA nicht vorhanden
  *

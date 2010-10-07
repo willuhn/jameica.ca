@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/wizzard/CertificateWizzardHibiscusLicense.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/26 23:48:49 $
+ * $Revision: 1.3 $
+ * $Date: 2010/10/07 12:20:39 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -45,6 +45,7 @@ public class CertificateWizzardHibiscusLicense extends CertificateWizzardCodeSig
   private TextInput cn        = null;
   private TextInput o         = null;
   private TextInput ou        = null;
+  private TextInput bc        = null;
   
   /**
    * @see de.willuhn.jameica.ca.gui.wizzard.CertificateWizzardCodeSign#getName()
@@ -78,6 +79,24 @@ public class CertificateWizzardHibiscusLicense extends CertificateWizzardCodeSig
     return this.cn;
   }
   
+  
+  
+  /**
+   * @see de.willuhn.jameica.ca.gui.wizzard.AbstractCertificateWizzard#getBC()
+   */
+  TextInput getBC()
+  {
+    if (this.bc == null)
+    {
+      this.bc = super.getBC();
+      this.bc.setName(i18n.tr("Zulässige Konten"));
+      this.bc.setComment(i18n.tr("Maximale Zahl zulässiger Konten"));
+      this.bc.setValue("2");
+      this.bc.setMandatory(true);
+    }
+    return this.bc;
+  }
+
   /**
    * @see de.willuhn.jameica.ca.gui.wizzard.AbstractCertificateWizzard#getIssuer()
    */
@@ -218,6 +237,9 @@ public class CertificateWizzardHibiscusLicense extends CertificateWizzardCodeSig
 
 /**********************************************************************
  * $Log: CertificateWizzardHibiscusLicense.java,v $
+ * Revision 1.3  2010/10/07 12:20:39  willuhn
+ * @N Business-Category
+ *
  * Revision 1.2  2009/10/26 23:48:49  willuhn
  * @N Payment-Server-Wizzard ausblenden, wenn CA nicht vorhanden
  *

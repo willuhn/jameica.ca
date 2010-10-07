@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/template/Attribute.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/07 11:39:27 $
+ * $Revision: 1.3 $
+ * $Date: 2010/10/07 12:20:39 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -66,6 +66,11 @@ public class Attribute implements Serializable
    * OID fuer: Locality (L).
    */
   public final static String L = X509Name.L.getId();
+  
+  /**
+   * OID fuer: Business-Category.
+   */
+  public final static String BC = X509Name.BUSINESS_CATEGORY.getId();
 
   
   private String oid = null;
@@ -130,6 +135,9 @@ public class Attribute implements Serializable
 
 /**********************************************************************
  * $Log: Attribute.java,v $
+ * Revision 1.3  2010/10/07 12:20:39  willuhn
+ * @N Business-Category
+ *
  * Revision 1.2  2009/10/07 11:39:27  willuhn
  * *** empty log message ***
  *
