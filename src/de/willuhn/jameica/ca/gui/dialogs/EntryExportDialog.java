@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/dialogs/EntryExportDialog.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/15 23:15:04 $
+ * $Revision: 1.3 $
+ * $Date: 2011/05/06 12:31:32 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -17,8 +17,6 @@ import java.io.File;
 import java.security.PrivateKey;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
 
 import de.willuhn.jameica.ca.Plugin;
@@ -36,7 +34,6 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.security.Certificate;
 import de.willuhn.jameica.security.Principal;
 import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -86,14 +83,6 @@ public class EntryExportDialog extends AbstractDialog
    */
   protected void paint(Composite parent) throws Exception
   {
-    // Dialog bei Druck auf ESC automatisch schliessen
-    parent.addKeyListener(new KeyAdapter() {
-      public void keyReleased(KeyEvent e) {
-        if (e.keyCode == SWT.ESC)
-          throw new OperationCanceledException("export cancelled");
-      }
-    });
-    
     SimpleContainer container = new SimpleContainer(parent);
     container.addText(i18n.tr("Bitte wählen Sie das Verzeichnis, in dem die Schlüssel gespeichert werden sollen"),true);
     container.addInput(this.getFormatInput());
@@ -192,6 +181,9 @@ public class EntryExportDialog extends AbstractDialog
 
 /**********************************************************************
  * $Log: EntryExportDialog.java,v $
+ * Revision 1.3  2011/05/06 12:31:32  willuhn
+ * @R Nicht mehr noetig - macht AbstractDialog jetzt selbst
+ *
  * Revision 1.2  2009/10/15 23:15:04  willuhn
  * *** empty log message ***
  *

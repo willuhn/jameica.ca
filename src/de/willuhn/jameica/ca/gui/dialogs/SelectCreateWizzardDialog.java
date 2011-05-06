@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/dialogs/SelectCreateWizzardDialog.java,v $
- * $Revision: 1.3 $
- * $Date: 2010/08/10 12:14:24 $
+ * $Revision: 1.4 $
+ * $Date: 2011/05/06 12:31:32 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -16,8 +16,6 @@ package de.willuhn.jameica.ca.gui.dialogs;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
 
 import de.willuhn.jameica.ca.Plugin;
@@ -30,7 +28,6 @@ import de.willuhn.jameica.gui.internal.buttons.Cancel;
 import de.willuhn.jameica.gui.util.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.I18N;
@@ -70,14 +67,6 @@ public class SelectCreateWizzardDialog extends AbstractDialog
    */
   protected void paint(Composite parent) throws Exception
   {
-    // Dialog bei Druck auf ESC automatisch schliessen
-    parent.addKeyListener(new KeyAdapter() {
-      public void keyReleased(KeyEvent e) {
-        if (e.keyCode == SWT.ESC)
-          throw new OperationCanceledException("wizzard cancelled");
-      }
-    });
-
     SimpleContainer c = new SimpleContainer(parent);
     c.addText(i18n.tr("Bitte wählen Sie den Assistenten aus, den Sie zur Erstellung des " +
     		              "neuen Schlüssels nutzen möchten."),true);
@@ -126,7 +115,10 @@ public class SelectCreateWizzardDialog extends AbstractDialog
 
 /**********************************************************************
  * $Log: SelectCreateWizzardDialog.java,v $
- * Revision 1.3  2010/08/10 12:14:24  willuhn
+ * Revision 1.4  2011/05/06 12:31:32  willuhn
+ * @R Nicht mehr noetig - macht AbstractDialog jetzt selbst
+ *
+ * Revision 1.3  2010-08-10 12:14:24  willuhn
  * @B Dialog-Groesse
  * @N Automatische Vorauswahl des letzten Wizzards
  *

@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/dialogs/EntryImportDialog.java,v $
- * $Revision: 1.5 $
- * $Date: 2009/10/15 23:15:04 $
+ * $Revision: 1.6 $
+ * $Date: 2011/05/06 12:31:32 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -16,8 +16,6 @@ package de.willuhn.jameica.ca.gui.dialogs;
 import java.io.File;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
 
 import de.willuhn.jameica.ca.Plugin;
@@ -33,7 +31,6 @@ import de.willuhn.jameica.gui.internal.buttons.Cancel;
 import de.willuhn.jameica.gui.util.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -77,14 +74,6 @@ public class EntryImportDialog extends AbstractDialog
    */
   protected void paint(Composite parent) throws Exception
   {
-    // Dialog bei Druck auf ESC automatisch schliessen
-    parent.addKeyListener(new KeyAdapter() {
-      public void keyReleased(KeyEvent e) {
-        if (e.keyCode == SWT.ESC)
-          throw new OperationCanceledException("import cancelled");
-      }
-    });
-    
     SimpleContainer container = new SimpleContainer(parent);
     container.addText(i18n.tr("Bitte wählen die zu importierenden Schlüsseldateien aus,"),true);
     container.addInput(this.getFormatInput());
@@ -203,6 +192,9 @@ public class EntryImportDialog extends AbstractDialog
 
 /**********************************************************************
  * $Log: EntryImportDialog.java,v $
+ * Revision 1.6  2011/05/06 12:31:32  willuhn
+ * @R Nicht mehr noetig - macht AbstractDialog jetzt selbst
+ *
  * Revision 1.5  2009/10/15 23:15:04  willuhn
  * *** empty log message ***
  *
