@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/view/EntryTree.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/15 15:25:25 $
+ * $Revision: 1.3 $
+ * $Date: 2012/03/28 22:19:22 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -19,8 +19,7 @@ import de.willuhn.jameica.ca.gui.action.EntryImport;
 import de.willuhn.jameica.ca.gui.controller.EntryTreeControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.internal.buttons.Back;
-import de.willuhn.jameica.gui.util.ButtonArea;
+import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.util.I18N;
 
@@ -41,16 +40,20 @@ public class EntryTree extends AbstractView
     
     control.getTree().paint(this.getParent());
 
-    ButtonArea buttons = new ButtonArea(getParent(),3);
-    buttons.addButton(new Back(true));
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton(i18n.tr("Schlüssel importieren..."),new EntryImport(),null,false,"key-import.png");
     buttons.addButton(i18n.tr("Schlüssel erstellen..."),new EntryCreate(),null,false,"key-new.png");
+    buttons.paint(this.getParent());
   }
 }
 
 
 /**********************************************************************
  * $Log: EntryTree.java,v $
+ * Revision 1.3  2012/03/28 22:19:22  willuhn
+ * @R Back-Button entfernt
+ * @C Umstellung auf neue ButtonArea
+ *
  * Revision 1.2  2009/10/15 15:25:25  willuhn
  * @N Reload des Tree nach Erstellen/Loeschen eines Schluessels
  *

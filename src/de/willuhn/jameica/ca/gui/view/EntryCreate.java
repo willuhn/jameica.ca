@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/view/EntryCreate.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/15 22:55:30 $
+ * $Revision: 1.3 $
+ * $Date: 2012/03/28 22:19:22 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -19,8 +19,7 @@ import de.willuhn.jameica.ca.gui.wizzard.CertificateWizzard;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.internal.buttons.Back;
-import de.willuhn.jameica.gui.util.ButtonArea;
+import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.I18N;
@@ -45,8 +44,7 @@ public class EntryCreate extends AbstractView
     // Wir rufen die paint()-Funktion des Wizzards auf
     wizzard.paint(this.getParent());
     
-    ButtonArea buttons = new ButtonArea(this.getParent(),2);
-    buttons.addButton(new Back(false));
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton(i18n.tr("Schlüssel erstellen"),new Action()
     {
       /**
@@ -57,6 +55,7 @@ public class EntryCreate extends AbstractView
         control.handleCreate();
       }
     },null,true,"key-new.png");
+    buttons.paint(this.getParent());
   }
 
 }
@@ -64,6 +63,10 @@ public class EntryCreate extends AbstractView
 
 /**********************************************************************
  * $Log: EntryCreate.java,v $
+ * Revision 1.3  2012/03/28 22:19:22  willuhn
+ * @R Back-Button entfernt
+ * @C Umstellung auf neue ButtonArea
+ *
  * Revision 1.2  2009/10/15 22:55:30  willuhn
  * @N Wizzard zum Erstellen von Hibiscus Payment-Server Lizenzen
  *
