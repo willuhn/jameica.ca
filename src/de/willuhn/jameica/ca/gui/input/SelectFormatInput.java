@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/input/SelectFormatInput.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/15 23:14:18 $
+ * $Revision: 1.3 $
+ * $Date: 2012/03/28 22:28:11 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -51,7 +51,7 @@ public class SelectFormatInput extends SelectInput
     List<Format> list = new ArrayList<Format>();
     try
     {
-      ClassFinder finder = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getClassLoader().getClassFinder();
+      ClassFinder finder = Application.getPluginLoader().getManifest(Plugin.class).getClassLoader().getClassFinder();
       Class<Format>[] classes = finder.findImplementors(Format.class);
       for (Class<Format> c:classes)
       {
@@ -76,6 +76,10 @@ public class SelectFormatInput extends SelectInput
 
 /**********************************************************************
  * $Log: SelectFormatInput.java,v $
+ * Revision 1.3  2012/03/28 22:28:11  willuhn
+ * @N Einfuehrung eines neuen Interfaces "Plugin", welches von "AbstractPlugin" implementiert wird. Es dient dazu, kuenftig auch Jameica-Plugins zu unterstuetzen, die selbst gar keinen eigenen Java-Code mitbringen sondern nur ein Manifest ("plugin.xml") und z.Bsp. Jars oder JS-Dateien. Plugin-Autoren muessen lediglich darauf achten, dass die Jameica-Funktionen, die bisher ein Object vom Typ "AbstractPlugin" zuruecklieferten, jetzt eines vom Typ "Plugin" liefern.
+ * @C "getClassloader()" verschoben von "plugin.getRessources().getClassloader()" zu "manifest.getClassloader()" - der Zugriffsweg ist kuerzer. Die alte Variante existiert weiterhin, ist jedoch als deprecated markiert.
+ *
  * Revision 1.2  2009/10/15 23:14:18  willuhn
  * *** empty log message ***
  *
