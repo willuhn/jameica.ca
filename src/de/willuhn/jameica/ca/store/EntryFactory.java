@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/EntryFactory.java,v $
- * $Revision: 1.9 $
- * $Date: 2009/10/27 16:47:20 $
+ * $Revision: 1.10 $
+ * $Date: 2012/03/28 22:19:40 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -82,6 +82,7 @@ public class EntryFactory
    * Liest ein Schluesselpaar ein. 
    * @param cert Dateiname des Zertifikates.
    * @param privateKey Dateiname des Private-Keys. Optional.
+   * @param format das Format des Keys.
    * @return der erzeugte Entry.
    * @throws Exception
    */
@@ -355,6 +356,9 @@ public class EntryFactory
 
 /**********************************************************************
  * $Log: EntryFactory.java,v $
+ * Revision 1.10  2012/03/28 22:19:40  willuhn
+ * @D javadoc Fixes
+ *
  * Revision 1.9  2009/10/27 16:47:20  willuhn
  * @N Support zum Ueberschreiben/als Kopie anlegen beim Import
  * @N Integration in Jameica-Suche
