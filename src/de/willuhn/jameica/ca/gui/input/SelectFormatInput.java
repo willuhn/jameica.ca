@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/input/SelectFormatInput.java,v $
- * $Revision: 1.4 $
- * $Date: 2012/03/29 20:57:15 $
+ * $Revision: 1.5 $
+ * $Date: 2012/03/29 21:14:17 $
  * $Author: willuhn $
  * $Locker:  $
  * $State: Exp $
@@ -51,7 +51,7 @@ public class SelectFormatInput extends SelectInput
     List<Format> list = new ArrayList<Format>();
     try
     {
-      ClassFinder finder = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getClassLoader().getClassFinder(); // COMPAT zu Jameica 2.2
+      ClassFinder finder = Application.getPluginLoader().getManifest(Plugin.class).getClassLoader().getClassFinder();
       Class<Format>[] classes = finder.findImplementors(Format.class);
       for (Class<Format> c:classes)
       {
@@ -76,6 +76,9 @@ public class SelectFormatInput extends SelectInput
 
 /**********************************************************************
  * $Log: SelectFormatInput.java,v $
+ * Revision 1.5  2012/03/29 21:14:17  willuhn
+ * @C Kompatibilitaet zu Jameica 2.2 leider doch nicht moeglich
+ *
  * Revision 1.4  2012/03/29 20:57:15  willuhn
  * @C Kompatibilitaet zu Jameica 2.2 wieder hergestellt
  *
