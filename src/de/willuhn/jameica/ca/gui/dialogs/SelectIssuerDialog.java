@@ -1,12 +1,6 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/dialogs/SelectIssuerDialog.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/26 14:49:00 $
- * $Author: willuhn $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by willuhn software & services
+ * Copyright (c) by Olaf Willuhn
  * All rights reserved
  *
  **********************************************************************/
@@ -62,7 +56,7 @@ public class SelectIssuerDialog extends AbstractDialog
    */
   protected void paint(Composite parent) throws Exception
   {
-    SimpleContainer container = new SimpleContainer(parent.getParent());
+    SimpleContainer container = new SimpleContainer(parent.getParent(),true);
     container.addText(i18n.tr("Bitte wählen Sie das Aussteller-Zertifikate aus, mit dem der neue " +
     		                      "Schlüssel signiert werden soll.\nKlicken Sie alternativ auf \"Kein Aussteller\" wenn" +
     		                      "Sie ein selbstsigniertes Zertifikate erstellen möchten."),true);
@@ -83,7 +77,7 @@ public class SelectIssuerDialog extends AbstractDialog
     table.setSummary(false);
     table.setContextMenu(null); // Contextmenu entfernen - ist im Dialog nicht erlaubt
     
-    table.paint(container.getComposite());
+    container.addPart(table);
     
     ButtonArea buttons = container.createButtonArea(3);
     buttons.addButton(i18n.tr("Übernehmen"),new Action()
@@ -115,17 +109,3 @@ public class SelectIssuerDialog extends AbstractDialog
   }
 
 }
-
-
-/**********************************************************************
- * $Log: SelectIssuerDialog.java,v $
- * Revision 1.3  2009/10/26 14:49:00  willuhn
- * *** empty log message ***
- *
- * Revision 1.2  2009/10/26 14:47:48  willuhn
- * *** empty log message ***
- *
- * Revision 1.1  2009/10/22 17:27:08  willuhn
- * @N Auswahl des Ausstellers via DialogInput
- *
- **********************************************************************/

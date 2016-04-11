@@ -1,12 +1,6 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/format/PEMFormat.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/10/07 16:38:59 $
- * $Author: willuhn $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by willuhn software & services
+ * Copyright (c) by Olaf Willuhn
  * All rights reserved
  *
  **********************************************************************/
@@ -21,22 +15,44 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
-import org.bouncycastle.openssl.PEMReader;
-import org.bouncycastle.openssl.PEMWriter;
-import org.bouncycastle.openssl.PasswordFinder;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMDecryptorProvider;
+import org.bouncycastle.openssl.PEMEncryptedKeyPair;
+import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
+import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
+
+import de.willuhn.io.IOUtil;
+import de.willuhn.jameica.ca.Plugin;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.util.ApplicationException;
+import de.willuhn.util.I18N;
 
 /**
  * Implementierung des PEM-Format (Base64).
  */
 public class PEMFormat implements Format
 {
+  private final static I18N i18n = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getI18N();
+  
   /**
    * @see de.willuhn.jameica.ca.store.format.Format#readCertificate(java.io.InputStream)
    */
   public X509Certificate readCertificate(InputStream is) throws Exception
   {
-    PEMReader reader = new PEMReader(new InputStreamReader(is));
-    return (X509Certificate) reader.readObject();
+    PEMParser reader = null;
+    
+    try
+    {
+      reader = new PEMParser(new InputStreamReader(is));
+      return (X509Certificate) reader.readObject();
+    }
+    finally
+    {
+      IOUtil.close(reader);
+    }
   }
 
   /**
@@ -44,25 +60,32 @@ public class PEMFormat implements Format
    */
   public PrivateKey readPrivateKey(InputStream is, final char[] password) throws Exception
   {
-    PEMReader reader = new PEMReader(new InputStreamReader(is),new PasswordFinder()
+    PEMParser reader = null;
+    
+    try
     {
-      /**
-       * @see org.bouncycastle.openssl.PasswordFinder#getPassword()
-       */
-      public char[] getPassword()
+      PEMDecryptorProvider decProv = new JcePEMDecryptorProviderBuilder().build(password);
+      JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME);
+      
+      reader = new PEMParser(new InputStreamReader(is));
+      Object object = reader.readObject();
+      KeyPair pair = null;
+      if (object instanceof PEMEncryptedKeyPair)
       {
-        try
-        {
-          return password;
-        }
-        catch (Exception e)
-        {
-          throw new RuntimeException(e);
-        }
+        pair = converter.getKeyPair(((PEMEncryptedKeyPair) object).decryptKeyPair(decProv));
+        return pair.getPrivate();
       }
-    });
-    KeyPair pair = (KeyPair) reader.readObject();
-    return pair.getPrivate();
+      else if (object instanceof PrivateKeyInfo)
+      {
+        return converter.getPrivateKey((PrivateKeyInfo) object);
+      }
+      
+      throw new ApplicationException(i18n.tr("Schlüsselformat unbekannt: {0}",object.getClass().getName()));
+    }
+    finally
+    {
+      IOUtil.close(reader);
+    }
   }
 
   /**
@@ -70,9 +93,17 @@ public class PEMFormat implements Format
    */
   public void writeCertificate(X509Certificate cert, OutputStream os) throws Exception
   {
-    PEMWriter writer = new PEMWriter(new OutputStreamWriter(os));
-    writer.writeObject(cert);
-    writer.flush();
+    JcaPEMWriter writer = null;
+    try
+    {
+      writer = new JcaPEMWriter(new OutputStreamWriter(os));
+      writer.writeObject(cert);
+      writer.flush();
+    }
+    finally
+    {
+      IOUtil.close(writer);
+    }
   }
 
   /**
@@ -80,9 +111,17 @@ public class PEMFormat implements Format
    */
   public void writePrivateKey(PrivateKey key, OutputStream os) throws Exception
   {
-    PEMWriter writer = new PEMWriter(new OutputStreamWriter(os));
-    writer.writeObject(key);
-    writer.flush();
+    JcaPEMWriter writer = null;
+    try
+    {
+      writer = new JcaPEMWriter(new OutputStreamWriter(os));
+      writer.writeObject(key);
+      writer.flush();
+    }
+    finally
+    {
+      IOUtil.close(writer);
+    }
   }
 
   /**
@@ -92,26 +131,4 @@ public class PEMFormat implements Format
   {
     return "PEM-Format, Base64 (Dateiendung meist *.pem oder *.crt)";
   }
-
 }
-
-
-/**********************************************************************
- * $Log: PEMFormat.java,v $
- * Revision 1.4  2009/10/07 16:38:59  willuhn
- * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
- *
- * Revision 1.3  2009/10/07 11:47:59  willuhn
- * *** empty log message ***
- *
- * Revision 1.2  2009/10/06 16:36:00  willuhn
- * @N Extensions
- * @N PEM-Writer
- *
- * Revision 1.1  2009/10/06 00:27:37  willuhn
- * *** empty log message ***
- *
- * Revision 1.1  2009/10/05 16:02:38  willuhn
- * @N Neues Jameica-Plugin: "jameica.ca" - ein Certifcate-Authority-Tool zum Erstellen und Verwalten von SSL-Zertifikaten
- *
- **********************************************************************/

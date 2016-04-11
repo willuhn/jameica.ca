@@ -1,12 +1,6 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/template/Template.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/10/14 23:58:17 $
- * $Author: willuhn $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by willuhn software & services
+ * Copyright (c) by Olaf Willuhn
  * All rights reserved
  *
  **********************************************************************/
@@ -18,7 +12,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.willuhn.jameica.ca.Plugin;
 import de.willuhn.jameica.ca.store.Entry;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.util.I18N;
 
 
 /**
@@ -26,6 +23,8 @@ import de.willuhn.jameica.ca.store.Entry;
  */
 public class Template implements Serializable
 {
+  protected final static I18N i18n = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getI18N();
+  
   /**
    * Default-Schluessellaenge.
    */
@@ -34,7 +33,7 @@ public class Template implements Serializable
   /**
    * Default-Signatur-Algorithmus.
    */
-  public final static String SIGNATUREALG_DEFAULT = "SHA1WithRSAEncryption";
+  public final static String SIGNATUREALG_DEFAULT = "SHA256WithRSAEncryption";
   
   private int keysize                = KEYSIZE_DEFAULT;
   private String signatureAlg        = SIGNATUREALG_DEFAULT;
@@ -175,21 +174,3 @@ public class Template implements Serializable
   }
 
 }
-
-
-/**********************************************************************
- * $Log: Template.java,v $
- * Revision 1.4  2009/10/14 23:58:17  willuhn
- * @N Erster Code fuer die Wizzards zum Erstellen neuer Zertifikate
- *
- * Revision 1.3  2009/10/06 16:36:00  willuhn
- * @N Extensions
- * @N PEM-Writer
- *
- * Revision 1.2  2009/10/06 00:27:37  willuhn
- * *** empty log message ***
- *
- * Revision 1.1  2009/10/05 16:02:38  willuhn
- * @N Neues Jameica-Plugin: "jameica.ca" - ein Certifcate-Authority-Tool zum Erstellen und Verwalten von SSL-Zertifikaten
- *
- **********************************************************************/

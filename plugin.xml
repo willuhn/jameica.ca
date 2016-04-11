@@ -10,7 +10,7 @@
   <homepage>http://www.willuhn.de/products/jameica/extensions.php#jameica.ca</homepage>
   <license>GPL - http://www.gnu.org/copyleft/gpl.html</license>
 
-  <requires jameica="2.6.0+">
+  <requires jameica="2.7.0+">
   </requires>
 
   <classfinder>

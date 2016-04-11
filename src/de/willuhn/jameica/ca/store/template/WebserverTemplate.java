@@ -1,29 +1,24 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/template/WebserverTemplate.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/07 11:39:27 $
- * $Author: willuhn $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by willuhn software & services
+ * Copyright (c) by Olaf Willuhn
  * All rights reserved
  *
  **********************************************************************/
 
 package de.willuhn.jameica.ca.store.template;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Vector;
 
-import org.bouncycastle.asn1.DERObjectIdentifier;
+import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.misc.MiscObjectIdentifiers;
 import org.bouncycastle.asn1.misc.NetscapeCertType;
 import org.bouncycastle.asn1.x509.BasicConstraints;
-import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
 import org.bouncycastle.asn1.x509.KeyPurposeId;
 import org.bouncycastle.asn1.x509.KeyUsage;
-import org.bouncycastle.asn1.x509.X509Extensions;
+
+import de.willuhn.util.ApplicationException;
 
 /**
  * Vorkonfiguriertes Template fuer das Zertifikat eines Webservers.
@@ -32,34 +27,42 @@ public class WebserverTemplate extends Template
 {
   /**
    * Erstellt ein neues Template fuer ein Webserver-Zertifikat.
+   * @throws ApplicationException
    */
-  public WebserverTemplate()
+  public WebserverTemplate() throws ApplicationException
   {
-    List<Extension> extensions = this.getExtensions();
+    try
+    {
+      List<Extension> extensions = this.getExtensions();
 
-    extensions.add(new Extension(X509Extensions.BasicConstraints.getId(),
-                                 true,
-                                 new BasicConstraints(false).getDEREncoded()));
+      extensions.add(new Extension(org.bouncycastle.asn1.x509.Extension.basicConstraints.getId(),
+                                   true,
+                                   new BasicConstraints(false).getEncoded()));
 
-    // Key-Usage
-    extensions.add(new Extension(X509Extensions.KeyUsage.getId(),
-                                 true,
-                                 new KeyUsage(KeyUsage.digitalSignature |
-                                              KeyUsage.keyEncipherment | 
-                                              KeyUsage.nonRepudiation | 
-                                              KeyUsage.dataEncipherment).getDEREncoded()));
+      // Key-Usage
+      extensions.add(new Extension(org.bouncycastle.asn1.x509.Extension.keyUsage.getId(),
+                                   true,
+                                   new KeyUsage(KeyUsage.digitalSignature |
+                                                KeyUsage.keyEncipherment |
+                                                KeyUsage.nonRepudiation |
+                                                KeyUsage.dataEncipherment).getEncoded()));
 
-    // Server-Zertifikat
-    Vector<DERObjectIdentifier> v = new Vector<DERObjectIdentifier>();
-    v.add(KeyPurposeId.id_kp_serverAuth);
-    extensions.add(new Extension(X509Extensions.ExtendedKeyUsage.getId(),
-                                 false,
-                                 new ExtendedKeyUsage(v).getDEREncoded()));
+      // Server-Zertifikat
+      ASN1EncodableVector purposes = new ASN1EncodableVector();
+      purposes.add(KeyPurposeId.id_kp_serverAuth);
+      extensions.add(new Extension(org.bouncycastle.asn1.x509.Extension.extendedKeyUsage.getId(),
+                                   false,
+                                   new DERSequence(purposes).getEncoded()));
 
-    // Netscape-Extension
-    extensions.add(new Extension(MiscObjectIdentifiers.netscapeCertType.getId(),
-                                 false,
-                                 new NetscapeCertType(NetscapeCertType.sslServer).getDEREncoded()));
+      // Netscape-Extension
+      extensions.add(new Extension(MiscObjectIdentifiers.netscapeCertType.getId(),
+                                   false,
+                                   new NetscapeCertType(NetscapeCertType.sslServer).getEncoded()));
+    }
+    catch (IOException e)
+    {
+      throw new ApplicationException(i18n.tr("Fehler beim Erstellen des Template: {0}",e.getMessage()), e);
+    }
   }
   
   /**
@@ -70,15 +73,3 @@ public class WebserverTemplate extends Template
     return "Webserver-Zertifikat";
   }
 }
-
-
-/**********************************************************************
- * $Log: WebserverTemplate.java,v $
- * Revision 1.2  2009/10/07 11:39:27  willuhn
- * *** empty log message ***
- *
- * Revision 1.1  2009/10/06 16:36:00  willuhn
- * @N Extensions
- * @N PEM-Writer
- *
- **********************************************************************/

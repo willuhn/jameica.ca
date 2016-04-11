@@ -36,7 +36,7 @@ public class Entry implements Comparable
   /**
    * Legt fest, ob nur tatsaechliche CA-Zertifikate als solche benutzt werden duerfen
    */
-  public final static boolean CHECK_CA = false;
+  public final static boolean CHECK_CA = Boolean.valueOf(false);
   
   private Store store            = null;
 

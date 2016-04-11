@@ -1,38 +1,41 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/Plugin.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/27 16:47:20 $
- * $Author: willuhn $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by willuhn software & services
+ * Copyright (c) by Olaf Willuhn
  * All rights reserved
  *
  **********************************************************************/
 
 package de.willuhn.jameica.ca;
 
+import java.security.Provider;
+import java.security.Security;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import de.willuhn.jameica.plugin.AbstractPlugin;
+import de.willuhn.util.ApplicationException;
+import de.willuhn.util.I18N;
 
 /**
  * Basis-Klasse des Plugins.
  */
 public class Plugin extends AbstractPlugin
 {
+  /**
+   * @see de.willuhn.jameica.plugin.AbstractPlugin#init()
+   */
+  @Override
+  public void init() throws ApplicationException
+  {
+    Provider prov = Security.getProvider(BouncyCastleProvider.PROVIDER_NAME);
+    
+    // Version checken.
+    if (prov.getVersion() < 1.54d)
+    {
+      I18N i18n = getResources().getI18N();
+      throw new ApplicationException(i18n.tr("BouncyCastle-Version zu alt. Bitte aktualisieren Sie Jameica"));
+    }
+    
+    super.init();
+  }
 }
-
-
-/**********************************************************************
- * $Log: Plugin.java,v $
- * Revision 1.3  2009/10/27 16:47:20  willuhn
- * @N Support zum Ueberschreiben/als Kopie anlegen beim Import
- * @N Integration in Jameica-Suche
- *
- * Revision 1.2  2009/10/07 16:38:59  willuhn
- * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
- *
- * Revision 1.1  2009/10/05 16:02:38  willuhn
- * @N Neues Jameica-Plugin: "jameica.ca" - ein Certifcate-Authority-Tool zum Erstellen und Verwalten von SSL-Zertifikaten
- *
- **********************************************************************/

@@ -1,12 +1,6 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/template/Attribute.java,v $
- * $Revision: 1.3 $
- * $Date: 2010/10/07 12:20:39 $
- * $Author: willuhn $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by willuhn software & services
+ * Copyright (c) by Olaf Willuhn
  * All rights reserved
  *
  **********************************************************************/
@@ -15,7 +9,7 @@ package de.willuhn.jameica.ca.store.template;
 
 import java.io.Serializable;
 
-import org.bouncycastle.asn1.x509.X509Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
 
 /**
  * Ein einzelnes Attribut eines Zertifikates.
@@ -25,52 +19,52 @@ public class Attribute implements Serializable
   /**
    * OID fuer: Common-Name (CN).
    */
-  public final static String CN = X509Name.CN.getId();
+  public final static String CN = BCStyle.CN.getId();
   
   /**
    * OID fuer: Organisation (O).
    */
-  public final static String O  = X509Name.O.getId();
+  public final static String O  = BCStyle.O.getId();
   
   /**
    * OID fuer: Organizational Unit (OU).
    */
-  public final static String OU = X509Name.OU.getId();
+  public final static String OU = BCStyle.OU.getId();
 
   /**
    * OID fuer: Vorname (GIVENNAME).
    */
-  public final static String GIVENNAME = X509Name.GIVENNAME.getId();
+  public final static String GIVENNAME = BCStyle.GIVENNAME.getId();
   
   /**
    * OID fuer: Nachname (SURNAME).
    */
-  public final static String SURNAME = X509Name.SURNAME.getId();
+  public final static String SURNAME = BCStyle.SURNAME.getId();
   
   /**
    * OID fuer: Mail-Adresse (EmailAddress).
    */
-  public final static String EmailAddress = X509Name.EmailAddress.getId();
+  public final static String EmailAddress = BCStyle.EmailAddress.getId();
   
   /**
    * OID fuer: Country (C).
    */
-  public final static String C = X509Name.C.getId();
+  public final static String C = BCStyle.C.getId();
 
   /**
    * OID fuer: State or Province (ST).
    */
-  public final static String ST = X509Name.ST.getId();
+  public final static String ST = BCStyle.ST.getId();
 
   /**
    * OID fuer: Locality (L).
    */
-  public final static String L = X509Name.L.getId();
+  public final static String L = BCStyle.L.getId();
   
   /**
    * OID fuer: Business-Category.
    */
-  public final static String BC = X509Name.BUSINESS_CATEGORY.getId();
+  public final static String BC = BCStyle.BUSINESS_CATEGORY.getId();
 
   
   private String oid = null;
@@ -131,21 +125,3 @@ public class Attribute implements Serializable
     this.value = value;
   }
 }
-
-
-/**********************************************************************
- * $Log: Attribute.java,v $
- * Revision 1.3  2010/10/07 12:20:39  willuhn
- * @N Business-Category
- *
- * Revision 1.2  2009/10/07 11:39:27  willuhn
- * *** empty log message ***
- *
- * Revision 1.1  2009/10/06 16:36:00  willuhn
- * @N Extensions
- * @N PEM-Writer
- *
- * Revision 1.1  2009/10/05 16:02:38  willuhn
- * @N Neues Jameica-Plugin: "jameica.ca" - ein Certifcate-Authority-Tool zum Erstellen und Verwalten von SSL-Zertifikaten
- *
- **********************************************************************/

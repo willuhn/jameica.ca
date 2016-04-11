@@ -1,12 +1,6 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/wizzard/AbstractCertificateWizzard.java,v $
- * $Revision: 1.4 $
- * $Date: 2010/10/07 12:20:39 $
- * $Author: willuhn $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by willuhn software & services
+ * Copyright (c) by Olaf Willuhn
  * All rights reserved
  *
  **********************************************************************/
@@ -373,32 +367,3 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
     return this.getName().compareTo(((CertificateWizzard)o).getName());
   }
 }
-
-
-/**********************************************************************
- * $Log: AbstractCertificateWizzard.java,v $
- * Revision 1.4  2010/10/07 12:20:39  willuhn
- * @N Business-Category
- *
- * Revision 1.3  2009/10/26 23:48:49  willuhn
- * @N Payment-Server-Wizzard ausblenden, wenn CA nicht vorhanden
- *
- * Revision 1.2  2009/10/22 17:27:08  willuhn
- * @N Auswahl des Ausstellers via DialogInput
- *
- * Revision 1.1  2009/10/15 22:55:29  willuhn
- * @N Wizzard zum Erstellen von Hibiscus Payment-Server Lizenzen
- *
- * Revision 1.4  2009/10/15 17:04:48  willuhn
- * *** empty log message ***
- *
- * Revision 1.3  2009/10/15 15:25:25  willuhn
- * @N Reload des Tree nach Erstellen/Loeschen eines Schluessels
- *
- * Revision 1.2  2009/10/15 11:50:42  willuhn
- * @N Erste Schluessel-Erstellung via GUI und Wizzard funktioniert ;)
- *
- * Revision 1.1  2009/10/14 23:58:17  willuhn
- * @N Erster Code fuer die Wizzards zum Erstellen neuer Zertifikate
- *
- **********************************************************************/
