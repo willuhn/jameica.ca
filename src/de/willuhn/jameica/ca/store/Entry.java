@@ -1,12 +1,6 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Entry.java,v $
- * $Revision: 1.8 $
- * $Date: 2010/08/10 13:57:18 $
- * $Author: willuhn $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by willuhn software & services
+ * Copyright (c) by Olaf Willuhn
  * All rights reserved
  *
  **********************************************************************/
@@ -22,7 +16,7 @@ import java.util.List;
 
 import javax.security.auth.x500.X500Principal;
 
-import org.bouncycastle.asn1.x509.X509Extensions;
+import org.bouncycastle.asn1.x509.Extension;
 
 import de.willuhn.jameica.security.Certificate;
 import de.willuhn.jameica.security.Principal;
@@ -181,7 +175,7 @@ public class Entry implements Comparable
     if (issuer.equals(x.getSubjectX500Principal()))
       return null;
 
-    byte[] issuerSig = x.getExtensionValue(X509Extensions.AuthorityKeyIdentifier.getId());
+    byte[] issuerSig = x.getExtensionValue(Extension.authorityKeyIdentifier.getId());
 
     List<Entry> all = this.store.getEntries();
     // wenn die Signatur des Ausstellers bekannt ist, suchen wir anhand
@@ -266,7 +260,7 @@ public class Entry implements Comparable
         continue;
       
       // Checken, ob die Aussteller-Signatur angegeben ist
-      byte[] issuerSig = x.getExtensionValue(X509Extensions.AuthorityKeyIdentifier.getId());
+      byte[] issuerSig = x.getExtensionValue(Extension.authorityKeyIdentifier.getId());
       if (issuerSig != null && issuerSig.length > 0)
       {
         // Issuer-Signatur angegeben. Mal checken, ob es unsere ist
@@ -378,32 +372,3 @@ public class Entry implements Comparable
   
   
 }
-
-
-/**********************************************************************
- * $Log: Entry.java,v $
- * Revision 1.8  2010/08/10 13:57:18  willuhn
- * @N Cachen der Zertifikate - beschleunigt die Ladezeiten enorm
- *
- * Revision 1.7  2010/06/14 08:41:42  willuhn
- * @N Attribut "O" vergleichen, wenn "CN" identisch ist
- *
- * Revision 1.6  2010/06/14 08:32:17  willuhn
- * @N Zertifikate alphabetisch sortieren
- *
- * Revision 1.5  2009/10/15 22:55:29  willuhn
- * @N Wizzard zum Erstellen von Hibiscus Payment-Server Lizenzen
- *
- * Revision 1.4  2009/10/15 17:04:48  willuhn
- * *** empty log message ***
- *
- * Revision 1.3  2009/10/13 00:26:31  willuhn
- * @N Tree-View fuer Zertifikate
- *
- * Revision 1.2  2009/10/07 16:38:59  willuhn
- * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
- *
- * Revision 1.1  2009/10/05 16:02:38  willuhn
- * @N Neues Jameica-Plugin: "jameica.ca" - ein Certifcate-Authority-Tool zum Erstellen und Verwalten von SSL-Zertifikaten
- *
- **********************************************************************/

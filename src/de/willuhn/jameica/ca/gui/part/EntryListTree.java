@@ -1,12 +1,6 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/part/EntryListTree.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/15 17:04:48 $
- * $Author: willuhn $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by willuhn software & services
+ * Copyright (c) by Olaf Willuhn
  * All rights reserved
  *
  **********************************************************************/
@@ -86,7 +80,7 @@ public class EntryListTree extends TreePart
           if (validTo != null && validTo.before(new Date()))
             item.setForeground(Color.ERROR.getSWTColor());
           else
-            item.setForeground(Color.WIDGET_FG.getSWTColor());
+            item.setForeground(Color.FOREGROUND.getSWTColor());
           
           // CA-Zertifikate zeigen wir fett gedruckt an.
           if (line.isCA())
@@ -195,17 +189,3 @@ public class EntryListTree extends TreePart
   }
   
 }
-
-
-/**********************************************************************
- * $Log: EntryListTree.java,v $
- * Revision 1.3  2009/10/15 17:04:48  willuhn
- * *** empty log message ***
- *
- * Revision 1.2  2009/10/15 15:25:25  willuhn
- * @N Reload des Tree nach Erstellen/Loeschen eines Schluessels
- *
- * Revision 1.1  2009/10/13 00:26:32  willuhn
- * @N Tree-View fuer Zertifikate
- *
- **********************************************************************/

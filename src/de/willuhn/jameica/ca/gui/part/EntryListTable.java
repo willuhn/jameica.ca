@@ -1,12 +1,6 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/part/EntryListTable.java,v $
- * $Revision: 1.7 $
- * $Date: 2009/10/26 23:49:45 $
- * $Author: willuhn $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by willuhn software & services
+ * Copyright (c) by Olaf Willuhn
  * All rights reserved
  *
  **********************************************************************/
@@ -96,7 +90,7 @@ public class EntryListTable extends TablePart
           if (validTo != null && validTo.before(new Date()))
             item.setForeground(Color.ERROR.getSWTColor());
           else
-            item.setForeground(Color.WIDGET_FG.getSWTColor());
+            item.setForeground(Color.FOREGROUND.getSWTColor());
           
           // CA-Zertifikate zeigen wir fett gedruckt an.
           if (line.isCA())
@@ -210,29 +204,3 @@ public class EntryListTable extends TablePart
   }
   
 }
-
-
-/**********************************************************************
- * $Log: EntryListTable.java,v $
- * Revision 1.7  2009/10/26 23:49:45  willuhn
- * *** empty log message ***
- *
- * Revision 1.6  2009/10/22 17:27:08  willuhn
- * @N Auswahl des Ausstellers via DialogInput
- *
- * Revision 1.5  2009/10/15 15:25:25  willuhn
- * @N Reload des Tree nach Erstellen/Loeschen eines Schluessels
- *
- * Revision 1.4  2009/10/13 00:26:32  willuhn
- * @N Tree-View fuer Zertifikate
- *
- * Revision 1.3  2009/10/07 17:09:11  willuhn
- * @N Schluessel loeschen
- *
- * Revision 1.2  2009/10/07 16:38:59  willuhn
- * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
- *
- * Revision 1.1  2009/10/07 12:24:04  willuhn
- * @N Erster GUI-Code
- *
- **********************************************************************/
