@@ -53,14 +53,6 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
   private TextInput bc = null;
   
   /**
-   * @see de.willuhn.jameica.ca.gui.wizzard.CertificateWizzard#isEnabled()
-   */
-  public boolean isEnabled()
-  {
-    return true;
-  }
-
-  /**
    * Liefert ein Eingabefeld fuer das Beginn-Datum der Gueltigkeit.
    * @return Eingabefeld.
    */
