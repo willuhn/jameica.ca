@@ -16,13 +16,18 @@ import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.KeyPurposeId;
 import org.bouncycastle.asn1.x509.KeyUsage;
 
+import de.willuhn.jameica.ca.Plugin;
+import de.willuhn.jameica.system.Application;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.I18N;
 
 /**
  * Vorkonfiguriertes Template fuer Code-Signierung.
  */
 public class CodeSignTemplate extends Template
 {
+  private final static I18N i18n = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getI18N();
+
   /**
    * Erstellt ein neues Template fuer Code-Signierung.
    * @throws ApplicationException

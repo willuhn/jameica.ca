@@ -1,12 +1,6 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/wizzard/CertificateWizzardCA.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/22 17:28:16 $
- * $Author: willuhn $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by willuhn software & services
+ * Copyright (c) by Olaf Willuhn
  * All rights reserved
  *
  **********************************************************************/
@@ -30,14 +24,6 @@ public class CertificateWizzardCA extends AbstractCertificateWizzard
   private DateInput validTo = null;
   private TextInput cn      = null;
 
-  /**
-   * @see de.willuhn.jameica.ca.gui.wizzard.CertificateWizzard#getName()
-   */
-  public String getName()
-  {
-    return i18n.tr("CA-Zertifikat");
-  }
-  
   /**
    * @see de.willuhn.jameica.ca.gui.wizzard.AbstractCertificateWizzard#_create()
    */
@@ -80,14 +66,3 @@ public class CertificateWizzardCA extends AbstractCertificateWizzard
   }
 
 }
-
-
-/**********************************************************************
- * $Log: CertificateWizzardCA.java,v $
- * Revision 1.2  2009/10/22 17:28:16  willuhn
- * @N Leerzeichen in CN erlauben
- *
- * Revision 1.1  2009/10/22 17:27:08  willuhn
- * @N Auswahl des Ausstellers via DialogInput
- *
- **********************************************************************/

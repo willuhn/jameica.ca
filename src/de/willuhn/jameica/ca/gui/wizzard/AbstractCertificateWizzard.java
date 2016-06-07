@@ -348,6 +348,15 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
    * @throws ApplicationException
    */
   abstract Template _create() throws ApplicationException;
+  
+  /**
+   * @see de.willuhn.jameica.ca.gui.wizzard.CertificateWizzard#getName()
+   */
+  @Override
+  public String getName() throws ApplicationException
+  {
+    return this._create().getName();
+  }
 
   /**
    * @see java.lang.Comparable#compareTo(java.lang.Object)
@@ -356,6 +365,14 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
   {
     if (o == null || !(o instanceof CertificateWizzard))
       return -1;
-    return this.getName().compareTo(((CertificateWizzard)o).getName());
+    
+    try
+    {
+      return this.getName().compareTo(((CertificateWizzard)o).getName());
+    }
+    catch (ApplicationException ae)
+    {
+      return this.getClass().getSimpleName().compareTo(o.getClass().getSimpleName());
+    }
   }
 }

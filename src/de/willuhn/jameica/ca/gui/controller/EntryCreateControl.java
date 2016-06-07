@@ -65,9 +65,9 @@ public class EntryCreateControl extends AbstractControl
    */
   public void handleCreate()
   {
-    Logger.info("creating key template from wizzard " + getWizzard().getName());
     try
     {
+      Logger.info("creating key template from wizzard " + getWizzard().getName());
       this.template = getWizzard().create();
     }
     catch (ApplicationException ae)

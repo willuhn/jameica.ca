@@ -47,8 +47,9 @@ public interface CertificateWizzard extends Part, Comparable
   /**
    * Liefert einen sprechenden Namen fuer den Wizzard bzw. das Zertifikat-Format.
    * @return sprechender Name fuer den Wizzard.
+   * @throws ApplicationException
    */
-  public String getName();
+  public String getName() throws ApplicationException;
   
   /**
    * Wird aufgerufen, wenn der User den "Uebernehmen"-Button geklickt hat.

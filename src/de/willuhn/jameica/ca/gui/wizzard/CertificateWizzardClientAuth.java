@@ -7,16 +7,16 @@
 
 package de.willuhn.jameica.ca.gui.wizzard;
 
-import de.willuhn.jameica.ca.store.template.CodeSignTemplate;
+import de.willuhn.jameica.ca.store.template.ClientAuthTemplate;
 import de.willuhn.jameica.ca.store.template.Template;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.util.ApplicationException;
 
 /**
  * Implementierung eines Wizzards zur Erstellung eines SSL-Zertifikates fuer
- * einen Code-Signierung.
+ * einen Client-Authentifizierung.
  */
-public class CertificateWizzardCodeSign extends AbstractCertificateWizzard
+public class CertificateWizzardClientAuth extends AbstractCertificateWizzard
 {
   private TextInput cn = null;
   
@@ -41,6 +41,6 @@ public class CertificateWizzardCodeSign extends AbstractCertificateWizzard
    */
   Template _create() throws ApplicationException
   {
-    return new CodeSignTemplate();
+    return new ClientAuthTemplate();
   }
 }
