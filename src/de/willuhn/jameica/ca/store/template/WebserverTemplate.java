@@ -8,6 +8,7 @@
 package de.willuhn.jameica.ca.store.template;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
@@ -15,11 +16,14 @@ import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.misc.MiscObjectIdentifiers;
 import org.bouncycastle.asn1.misc.NetscapeCertType;
 import org.bouncycastle.asn1.x509.BasicConstraints;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.KeyPurposeId;
 import org.bouncycastle.asn1.x509.KeyUsage;
 
 import de.willuhn.jameica.ca.Plugin;
 import de.willuhn.jameica.system.Application;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.I18N;
 
@@ -68,6 +72,40 @@ public class WebserverTemplate extends Template
     {
       throw new ApplicationException(i18n.tr("Fehler beim Erstellen des Template: {0}",e.getMessage()), e);
     }
+  }
+  
+  /**
+   * @see de.willuhn.jameica.ca.store.template.Template#getExtensions()
+   */
+  @Override
+  public List<Extension> getExtensions()
+  {
+    List<Extension> list = new ArrayList<Extension>(super.getExtensions());
+    
+    try
+    {
+      // subjectAltName noch hinzufuegen
+      for (Attribute a:this.getAttributes())
+      {
+        String oid = a.getOid();
+        String value = a.getValue();
+        
+        if (value == null || value.length() == 0 || oid == null || oid.length() == 0)
+          continue;
+        
+        if (oid.equals(Attribute.CN))
+        {
+          GeneralNames subjectAltName = new GeneralNames(new GeneralName(GeneralName.dNSName,value));
+          list.add(new Extension(org.bouncycastle.asn1.x509.Extension.subjectAlternativeName.getId(),false,subjectAltName.getEncoded()));
+        }
+      }
+    }
+    catch (Exception e)
+    {
+      Logger.error("unable to add subjectAltName",e);
+    }
+
+    return list;
   }
   
   /**

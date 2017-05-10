@@ -238,6 +238,8 @@ public class EntryFactory
 
       // Subject
       X500Name subjectName = null;
+      
+      String cn = null;
 
       // Attribute
       final List<Attribute> attributes = template.getAttributes();
@@ -250,6 +252,9 @@ public class EntryFactory
         
         nameBuilder.addRDN(new ASN1ObjectIdentifier(a.getOid()),value);
         subjectName = nameBuilder.build();
+        
+        if (a.getOid().equals(Attribute.CN))
+          cn = value;
       }
 
 
@@ -292,7 +297,7 @@ public class EntryFactory
       // Subject Key-Identifier als Extension hinzufuegen
       SubjectKeyIdentifier ski = new BcX509ExtensionUtils().createSubjectKeyIdentifier(this.readKeyInfo(keypair.getPublic()));
       generator.addExtension(org.bouncycastle.asn1.x509.Extension.subjectKeyIdentifier,false, ski);
-
+      
       // CA Key-Identifier als Extension hinzufuegen
       if (issuer != null)
       {
