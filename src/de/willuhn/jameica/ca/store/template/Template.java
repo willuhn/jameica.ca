@@ -172,5 +172,14 @@ public class Template implements Serializable
   {
     return "default";
   }
+  
+  /**
+   * Kann von abgeleiteten Klassen ueberschrieben werden, um unmittelbar vor der eigentlichen Erzeugung des
+   * Zertifikates noch eigene Extensions und Attribute hinzuzufuegen.
+   */
+  public void prepare()
+  {
+    
+  }
 
 }

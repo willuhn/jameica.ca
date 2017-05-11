@@ -14,7 +14,6 @@
 package de.willuhn.jameica.ca.gui.dialogs;
 
 import java.io.File;
-import java.security.PrivateKey;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -31,8 +30,6 @@ import de.willuhn.jameica.gui.input.DirectoryInput;
 import de.willuhn.jameica.gui.internal.buttons.Cancel;
 import de.willuhn.jameica.gui.util.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
-import de.willuhn.jameica.security.Certificate;
-import de.willuhn.jameica.security.Principal;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
@@ -106,17 +103,19 @@ public class EntryExportDialog extends AbstractDialog
         
         try
         {
-          // Wir ermitteln die Dateinamen anhand des Common-Names.
-          PrivateKey pk = entry.getPrivateKey();
-          Certificate cert = new Certificate(entry.getCertificate());
-          String name = cert.getSubject().getAttribute(Principal.COMMON_NAME);
+          File dir = new File(s);
+          if (!dir.exists())
+          {
+            if (!dir.mkdirs())
+              throw new ApplicationException(i18n.tr("Ziel-Ordner kann nicht erstellt werden"));
+          }
           
-          File certFile = new File(s,name + ".crt");
-          File keyFile = (pk != null ? new File(s,name + ".key") : null);
-          
+          if (!dir.isDirectory() || !dir.canWrite())
+            throw new ApplicationException(i18n.tr("Ziel-Ordner existiert nicht oder nicht beschreibbar"));
+
           StoreService service = (StoreService) Application.getServiceFactory().lookup(Plugin.class,"store");
           EntryFactory ef = service.getStore().getEntryFactory();
-          ef.write(entry,certFile,keyFile,format);
+          ef.write(entry,dir,format);
           close();
         }
         catch (ApplicationException ae)

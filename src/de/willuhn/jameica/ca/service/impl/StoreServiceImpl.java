@@ -104,6 +104,15 @@ public class StoreServiceImpl implements StoreService
         {
           return cb.overwrite(newEntry,oldEntry);
         }
+        
+        /**
+         * @see de.willuhn.jameica.ca.store.Callback#overwrite(java.io.File)
+         */
+        @Override
+        public boolean overwrite(File file) throws OperationCanceledException
+        {
+          return cb.overwrite(file);
+        }
       });
     }
     catch (Exception e)

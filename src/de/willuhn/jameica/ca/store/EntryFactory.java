@@ -7,15 +7,9 @@
 
 package de.willuhn.jameica.ca.store;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -88,94 +82,21 @@ public class EntryFactory
    */
   public Entry read(File cert, File privateKey, Format format) throws Exception
   {
-    InputStream is = null;
-
-    try
-    {
-      Entry e = new Entry();
-
-      // Public Key
-      is = new BufferedInputStream(new FileInputStream(cert));
-      e.setCertificate(format.readCertificate(is));
-      is.close();
-      is = null;
-
-      // Private Key
-      if (privateKey != null)
-      {
-        is = new BufferedInputStream(new FileInputStream(privateKey));
-        PrivateKey key = null;
-        
-        // Wir versuchen es erstmal mit einem leeren Passwort.
-        // Das wird bei Webserver-Zertifikaten haeufig so gemacht.
-        // Wenn das fehlschlaegt, koennen wir den User allemal noch fragen
-        try
-        {
-          Logger.info("trying to read " + privateKey + " with empty password");
-          key = format.readPrivateKey(is,new char[0]);
-          
-          // Wir machen noch einen Test zur sicherheit
-          if (key.getEncoded().length == 0)
-            throw new Exception();
-        }
-        catch (Exception ex)
-        {
-          Logger.info(privateKey + " seems to have a password, asking user");
-          key = format.readPrivateKey(is,this.callback.getPassword(privateKey));
-        }
-        
-        e.setPrivateKey(key);
-        is.close();
-        is = null;
-      }
-
-      return e;
-    }
-    finally
-    {
-      if (is != null)
-        is.close();
-    }
+    return format.read(cert,privateKey,this.callback);
   }
   
   /**
-   * Schreibt einen Schluessel in die angegebenen Dateien.
-   * @param entry der zu exportierende Schluessel.
-   * @param cert Dateiname fuer das Zertifikate.
-   * @param privateKey Dateiname fuer den Private-Key. Optional.
-   * @param format das Dateiformat.
+   * Schreibt den Eintrag in den angegebenen Ordner.
+   * @param e der Eintrag.
+   * @param dir der Ziel-Ordner.
+   * @param format das Format des Keys.
    * @throws Exception
    */
-  public void write(Entry entry, File cert, File privateKey, Format format) throws Exception
+  public void write(Entry e, File dir, Format format) throws Exception
   {
-    OutputStream os = null;
-
-    try
-    {
-      os = new BufferedOutputStream(new FileOutputStream(cert));
-      format.writeCertificate(entry.getCertificate(),os);
-      os.close();
-      os = null;
-
-      if (privateKey != null)
-      {
-        PrivateKey key = entry.getPrivateKey();
-        if (key != null)
-        {
-          os = new BufferedOutputStream(new FileOutputStream(privateKey));
-          format.writePrivateKey(key,os);
-          os.close();
-          os = null;
-        }
-      }
-    }
-    finally
-    {
-      if (os != null)
-        os.close();
-    }
+    format.write(e,dir,this.callback);
   }
-  
+
   /**
    * Erstellt einen neuen Schluessel basierend auf dem angegebenen Template.
    * @param template das Template.
@@ -189,6 +110,8 @@ public class EntryFactory
 
     try
     {
+      template.prepare();
+      
       Entry entry = new Entry();
       Entry issuer = template.getIssuer();
 
@@ -236,11 +159,6 @@ public class EntryFactory
       if (monitor != null) monitor.addPercentComplete(10);
       //////////////////////////////////////////////////////////////////////////
 
-      // Subject
-      X500Name subjectName = null;
-      
-      String cn = null;
-
       // Attribute
       final List<Attribute> attributes = template.getAttributes();
       X500NameBuilder nameBuilder = new X500NameBuilder();
@@ -251,12 +169,10 @@ public class EntryFactory
           continue;
         
         nameBuilder.addRDN(new ASN1ObjectIdentifier(a.getOid()),value);
-        subjectName = nameBuilder.build();
-        
-        if (a.getOid().equals(Attribute.CN))
-          cn = value;
       }
 
+      // Subject
+      X500Name subjectName = nameBuilder.build();
 
       // Aussteller
       PrivateKey key = null;

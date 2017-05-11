@@ -2,6 +2,7 @@
  *
  * Copyright (c) by Olaf Willuhn
  * All rights reserved
+ * GPLv2
  *
  **********************************************************************/
 
@@ -18,6 +19,7 @@ import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.asn1.x509.Extension;
 
+import de.willuhn.jameica.ca.Settings;
 import de.willuhn.jameica.security.Certificate;
 import de.willuhn.jameica.security.Principal;
 
@@ -27,11 +29,6 @@ import de.willuhn.jameica.security.Principal;
  */
 public class Entry implements Comparable
 {
-  /**
-   * Legt fest, ob nur tatsaechliche CA-Zertifikate als solche benutzt werden duerfen
-   */
-  public final static boolean CHECK_CA = Boolean.valueOf(false);
-  
   private Store store            = null;
 
   private String alias           = null;
@@ -162,6 +159,8 @@ public class Entry implements Comparable
     if (this.issuer != null || this.issuerChecked)
       return this.issuer;
 
+    final boolean checkCA = Settings.isCheckCA();
+    
     this.issuerChecked = true;
     
     X509Certificate x = this.getCertificate();
@@ -184,7 +183,7 @@ public class Entry implements Comparable
     {
       for (Entry e:all)
       {
-        if (CHECK_CA && !e.isCA())
+        if (checkCA && !e.isCA())
           continue;
 
         
@@ -202,7 +201,7 @@ public class Entry implements Comparable
     // Wir haben die Signatur nicht, stimmt vielleicht einen passenden DN?
     for (Entry e:all)
     {
-      if (CHECK_CA && !e.isCA())
+      if (checkCA && !e.isCA())
         continue;
 
       X500Principal subject = e.getCertificate().getSubjectX500Principal();
@@ -240,7 +239,7 @@ public class Entry implements Comparable
     
     this.clients = new ArrayList<Entry>();
 
-    if (CHECK_CA && !this.isCA())
+    if (Settings.isCheckCA() && !this.isCA())
       return this.clients;
 
     X509Certificate x = this.getCertificate();

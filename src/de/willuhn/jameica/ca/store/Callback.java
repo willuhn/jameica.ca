@@ -1,17 +1,13 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/store/Callback.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/10/27 16:47:20 $
- * $Author: willuhn $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by willuhn software & services
+ * Copyright (c) by Olaf Willuhn
  * All rights reserved
  *
  **********************************************************************/
 
 package de.willuhn.jameica.ca.store;
+
+import java.io.File;
 
 import de.willuhn.jameica.system.OperationCanceledException;
 
@@ -41,23 +37,12 @@ public interface Callback
    * @throws OperationCanceledException wenn der Import abgebrochen werden soll.
    */
   public boolean overwrite(Entry newEntry, Entry oldEntry) throws OperationCanceledException;
+
+  /**
+   * Wird aufgerufen, wenn versucht wird, eine Datei zu ueberschreiben, die schon existiert.
+   * @param file die zu ueberschreibende Datei.
+   * @return true, wenn die Datei ueberschrieben werden darf.
+   * @throws OperationCanceledException
+   */
+  public boolean overwrite(File file) throws OperationCanceledException;
 }
-
-
-/**********************************************************************
- * $Log: Callback.java,v $
- * Revision 1.4  2009/10/27 16:47:20  willuhn
- * @N Support zum Ueberschreiben/als Kopie anlegen beim Import
- * @N Integration in Jameica-Suche
- *
- * Revision 1.3  2009/10/19 11:51:56  willuhn
- * *** empty log message ***
- *
- * Revision 1.2  2009/10/06 16:36:00  willuhn
- * @N Extensions
- * @N PEM-Writer
- *
- * Revision 1.1  2009/10/05 16:02:38  willuhn
- * @N Neues Jameica-Plugin: "jameica.ca" - ein Certifcate-Authority-Tool zum Erstellen und Verwalten von SSL-Zertifikaten
- *
- **********************************************************************/

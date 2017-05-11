@@ -1,17 +1,14 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/CallbackGui.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/10/27 16:47:20 $
- * $Author: willuhn $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by willuhn software & services
+ * Copyright (c) by Olaf Willuhn
  * All rights reserved
+ * GPLv2
  *
  **********************************************************************/
 
 package de.willuhn.jameica.ca;
+
+import java.io.File;
 
 import de.willuhn.jameica.ca.store.Callback;
 import de.willuhn.jameica.ca.store.Entry;
@@ -72,14 +69,27 @@ public class CallbackGui implements Callback
       throw new OperationCanceledException("operation cancelled");
     }
   }
+  
+  /**
+   * @see de.willuhn.jameica.ca.store.Callback#overwrite(java.io.File)
+   */
+  @Override
+  public boolean overwrite(File file) throws OperationCanceledException
+  {
+    String q = i18n.tr("Datei {0} existiert bereits.\n‹berschreiben?",file.getAbsolutePath());
+    try
+    {
+      return Application.getCallback().askUser(q);
+    }
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
+    }
+    catch (Exception e)
+    {
+      Logger.error("error while asking user, cancel operation",e);
+      throw new OperationCanceledException("operation cancelled");
+    }
+  }
 
 }
-
-
-/**********************************************************************
- * $Log: CallbackGui.java,v $
- * Revision 1.1  2009/10/27 16:47:20  willuhn
- * @N Support zum Ueberschreiben/als Kopie anlegen beim Import
- * @N Integration in Jameica-Suche
- *
- **********************************************************************/

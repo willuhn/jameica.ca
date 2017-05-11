@@ -1,13 +1,8 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/model/EntryTreeModel.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/10/26 23:40:37 $
- * $Author: willuhn $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by willuhn software & services
+ * Copyright (c) by Olaf Willuhn
  * All rights reserved
+ * GPLv2
  *
  **********************************************************************/
 
@@ -19,6 +14,7 @@ import java.util.List;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.ca.Plugin;
+import de.willuhn.jameica.ca.Settings;
 import de.willuhn.jameica.ca.service.StoreService;
 import de.willuhn.jameica.ca.store.Entry;
 import de.willuhn.jameica.ca.store.Store;
@@ -44,24 +40,10 @@ public class EntryTreeModel
     List<Entry> entries = store.getEntries();
     for (Entry e:entries)
     {
-      if ((Entry.CHECK_CA && e.isCA()) || e.getIssuer() == null)
+      if ((Settings.isCheckCA() && e.isCA()) || e.getIssuer() == null)
         list.add(new ListItem(e));
     }
     
     return PseudoIterator.fromArray(list.toArray(new ListItem[list.size()]));
   }
 }
-
-
-/**********************************************************************
- * $Log: EntryTreeModel.java,v $
- * Revision 1.3  2009/10/26 23:40:37  willuhn
- * *** empty log message ***
- *
- * Revision 1.2  2009/10/22 17:27:08  willuhn
- * @N Auswahl des Ausstellers via DialogInput
- *
- * Revision 1.1  2009/10/13 00:26:32  willuhn
- * @N Tree-View fuer Zertifikate
- *
- **********************************************************************/

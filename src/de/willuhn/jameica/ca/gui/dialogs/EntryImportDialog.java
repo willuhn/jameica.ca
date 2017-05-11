@@ -92,7 +92,7 @@ public class EntryImportDialog extends AbstractDialog
         String key    = (String) getKeyInput().getValue();
         Format format = (Format) getFormatInput().getValue();
         
-        if (cert == null || cert.length() == 0 || format == null)
+        if (format == null)
           return;
 
         settings.setAttribute("import.cert.last",cert);
@@ -102,7 +102,7 @@ public class EntryImportDialog extends AbstractDialog
         {
           StoreService service = (StoreService) Application.getServiceFactory().lookup(Plugin.class,"store");
           EntryFactory ef = service.getStore().getEntryFactory();
-          entry = ef.read(new File(cert),key != null && key.length() > 0 ? new File(key) : null,format);
+          entry = ef.read(cert != null && cert.length() > 0 ? new File(cert) : null,key != null && key.length() > 0 ? new File(key) : null,format);
           close();
         }
         catch (ApplicationException ae)

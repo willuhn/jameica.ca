@@ -1,13 +1,8 @@
 /**********************************************************************
- * $Source: /cvsroot/jameica/jameica.ca/src/de/willuhn/jameica/ca/gui/model/EntryListModel.java,v $
- * $Revision: 1.5 $
- * $Date: 2009/10/22 17:27:08 $
- * $Author: willuhn $
- * $Locker:  $
- * $State: Exp $
  *
- * Copyright (c) by willuhn software & services
+ * Copyright (c) by Olaf Willuhn
  * All rights reserved
+ * GPLv2
  *
  **********************************************************************/
 
@@ -18,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.willuhn.jameica.ca.Plugin;
+import de.willuhn.jameica.ca.Settings;
 import de.willuhn.jameica.ca.service.StoreService;
 import de.willuhn.jameica.ca.store.Entry;
 import de.willuhn.jameica.ca.store.Store;
@@ -67,7 +63,7 @@ public class EntryListModel
       Entry e = i.getEntry();
       
       // Keine CA unc CA-Pruefung aktiv
-      if (Entry.CHECK_CA && !e.isCA())
+      if (Settings.isCheckCA() && !e.isCA())
         continue;
       
       // Kein Private-Key zum Unterschreiben da
@@ -79,23 +75,3 @@ public class EntryListModel
     return result;
   }
 }
-
-
-/**********************************************************************
- * $Log: EntryListModel.java,v $
- * Revision 1.5  2009/10/22 17:27:08  willuhn
- * @N Auswahl des Ausstellers via DialogInput
- *
- * Revision 1.4  2009/10/13 00:26:32  willuhn
- * @N Tree-View fuer Zertifikate
- *
- * Revision 1.3  2009/10/07 17:09:11  willuhn
- * @N Schluessel loeschen
- *
- * Revision 1.2  2009/10/07 16:38:59  willuhn
- * @N GUI-Code zum Anzeigen und Importieren von Schluesseln
- *
- * Revision 1.1  2009/10/07 12:24:04  willuhn
- * @N Erster GUI-Code
- *
- **********************************************************************/

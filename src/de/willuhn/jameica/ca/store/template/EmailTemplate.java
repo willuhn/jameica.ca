@@ -12,8 +12,6 @@ import java.util.List;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.DERSequence;
-import org.bouncycastle.asn1.misc.MiscObjectIdentifiers;
-import org.bouncycastle.asn1.misc.NetscapeCertType;
 import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
@@ -27,25 +25,25 @@ import de.willuhn.util.ApplicationException;
 import de.willuhn.util.I18N;
 
 /**
- * Vorkonfiguriertes Template fuer das Zertifikat eines Webservers.
+ * Vorkonfiguriertes Template fuer ein Mail-Zertifikat.
  */
-public class WebserverTemplate extends Template
+public class EmailTemplate extends Template
 {
   private final static I18N i18n = Application.getPluginLoader().getPlugin(Plugin.class).getResources().getI18N();
 
   /**
-   * Erstellt ein neues Template fuer ein Webserver-Zertifikat.
+   * Erstellt ein neues Template fuer ein Mail-Zertifikat.
    * @throws ApplicationException
    */
-  public WebserverTemplate() throws ApplicationException
+  public EmailTemplate() throws ApplicationException
   {
     try
     {
       List<Extension> extensions = this.getExtensions();
 
       extensions.add(new Extension(org.bouncycastle.asn1.x509.Extension.basicConstraints.getId(),
-                                   true,
-                                   new BasicConstraints(false).getEncoded()));
+                     true,
+                     new BasicConstraints(false).getEncoded()));
 
       // Key-Usage
       extensions.add(new Extension(org.bouncycastle.asn1.x509.Extension.keyUsage.getId(),
@@ -55,17 +53,13 @@ public class WebserverTemplate extends Template
                                                 KeyUsage.nonRepudiation |
                                                 KeyUsage.dataEncipherment).getEncoded()));
 
-      // Server-Zertifikat
+      // Client-Authentifizierung und Email-Protection.
       ASN1EncodableVector purposes = new ASN1EncodableVector();
-      purposes.add(KeyPurposeId.id_kp_serverAuth);
+      purposes.add(KeyPurposeId.id_kp_emailProtection);
+      purposes.add(KeyPurposeId.id_kp_clientAuth);
       extensions.add(new Extension(org.bouncycastle.asn1.x509.Extension.extendedKeyUsage.getId(),
                                    false,
                                    new DERSequence(purposes).getEncoded()));
-
-      // Netscape-Extension
-      extensions.add(new Extension(MiscObjectIdentifiers.netscapeCertType.getId(),
-                                   false,
-                                   new NetscapeCertType(NetscapeCertType.sslServer).getEncoded()));
     }
     catch (IOException e)
     {
@@ -74,7 +68,7 @@ public class WebserverTemplate extends Template
   }
   
   /**
-   * Ueberschrieben, um SubjectAltName noch hinzuzufuegen.
+   * Ueberschrieben um SubjectAltName und Email noch hinzuzufuegen.
    * @see de.willuhn.jameica.ca.store.template.Template#prepare()
    */
   @Override
@@ -95,6 +89,7 @@ public class WebserverTemplate extends Template
         {
           GeneralNames subjectAltName = new GeneralNames(new GeneralName(GeneralName.dNSName,value));
           this.getExtensions().add(new Extension(org.bouncycastle.asn1.x509.Extension.subjectAlternativeName.getId(),false,subjectAltName.getEncoded()));
+          this.getAttributes().add(new Attribute(Attribute.EmailAddress,value));
           return;
         }
         catch (Exception e)
@@ -110,6 +105,6 @@ public class WebserverTemplate extends Template
    */
   public String getName()
   {
-    return "Webserver-Zertifikat";
+    return "S/MIME-Zertifikat (E-Mail)";
   }
 }
