@@ -60,7 +60,17 @@ public class Attribute implements Serializable
    * OID fuer: Locality (L).
    */
   public final static String L = BCStyle.L.getId();
+
+  /**
+   * OID fuer: PLZ (PostalCode).
+   */
+  public final static String ZIP = BCStyle.POSTAL_CODE.getId();
   
+  /**
+   * OID fuer: Srasse (STREET).
+   */
+  public final static String STREET = BCStyle.STREET.getId();
+
   /**
    * OID fuer: Business-Category.
    */

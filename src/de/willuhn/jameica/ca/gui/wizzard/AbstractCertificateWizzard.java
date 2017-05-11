@@ -51,6 +51,8 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
   private TextInput l  = null;
   private TextInput st = null;
   private TextInput bc = null;
+  private TextInput zip = null;
+  private TextInput street = null;
   
   /**
    * Liefert ein Eingabefeld fuer das Beginn-Datum der Gueltigkeit.
@@ -240,6 +242,36 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
   }
 
   /**
+   * Liefert ein Eingabefeld fuer die PLZ.
+   * @return Eingabefeld.
+   */
+  TextInput getZip()
+  {
+    if (this.zip == null)
+    {
+      this.zip = createTemplate();
+      this.zip.setName(i18n.tr("PLZ"));
+      this.zip.setComment(i18n.tr("Postleitzahl (PostalCode)"));
+    }
+    return this.zip;
+  }
+
+  /**
+   * Liefert ein Eingabefeld fuer die Strasse.
+   * @return Eingabefeld.
+   */
+  TextInput getStreet()
+  {
+    if (this.street == null)
+    {
+      this.street = createTemplate();
+      this.street.setName(i18n.tr("Straße"));
+      this.street.setComment(i18n.tr("Straße und Hausnummer (Street)"));
+    }
+    return this.street;
+  }
+
+  /**
    * Liefert ein Eingabefeld fuer die Business-Kategorie.
    * @return Eingabefeld.
    */
@@ -305,6 +337,8 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
     attributes.add(new Attribute(Attribute.C,(String) getC().getValue()));
     attributes.add(new Attribute(Attribute.ST,(String) getST().getValue()));
     attributes.add(new Attribute(Attribute.L,(String) getL().getValue()));
+    attributes.add(new Attribute(Attribute.STREET,(String) getStreet().getValue()));
+    attributes.add(new Attribute(Attribute.ZIP,(String) getZip().getValue()));
     
     String bc = (String) getBC().getValue();
     if (bc != null && bc.length() > 0)
@@ -333,13 +367,19 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
 
     SimpleContainer container = new SimpleContainer(parent);
     container.addHeadline(i18n.tr("Eigenschaften des Zertifikates"));
+
     container.addInput(this.getCN());
     container.addInput(this.getO());
     container.addInput(this.getOU());
-    container.addInput(this.getC());
-    container.addInput(this.getST());
-    container.addInput(this.getL());
     container.addInput(this.getBC());
+    
+    container.addHeadline(i18n.tr("Adresse"));
+    container.addInput(this.getL());
+    container.addInput(this.getZip());
+    container.addInput(this.getStreet());
+    container.addInput(this.getST());
+    container.addInput(this.getC());
+
   }
 
   /**
