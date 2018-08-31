@@ -40,7 +40,8 @@ public class EntryTreeModel
     List<Entry> entries = store.getEntries();
     for (Entry e:entries)
     {
-      if ((Settings.isCheckCA() && e.isCA()) || e.getIssuer() == null)
+      // Bei CA-Zertifikaten nur die, die KEIN bekanntes Parent haben
+      if ((Settings.isCheckCA() && e.isCA() && e.getIssuer() == null) || (!e.isCA() && e.getIssuer() == null))
         list.add(new ListItem(e));
     }
     
