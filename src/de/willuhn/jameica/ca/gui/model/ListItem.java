@@ -75,10 +75,16 @@ public class ListItem implements GenericObjectNode, Comparable
    */
   public String getIssuer() throws Exception
   {
-    String cn = this.entry.getCommonName();
-    if (cn != null)
-      return cn;
-    return this.entry.getCertificate().getIssuerDN().getName();
+    X509Certificate x = this.entry.getCertificate();
+    Certificate c = new Certificate(x);
+    Principal self = c.getSubject();
+    Principal ca = c.getIssuer();
+    
+    // Keine CA angegeben oder Subject und CA identisch
+    if (ca == null || (self != null && ca != null && self.getAttribute(Principal.DISTINGUISHED_NAME).equals(ca.getAttribute(Principal.DISTINGUISHED_NAME))))
+      return null;
+    
+    return ca.getAttribute(Principal.COMMON_NAME);
   }
   
   /**
