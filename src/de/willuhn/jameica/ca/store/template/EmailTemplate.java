@@ -13,14 +13,11 @@ import java.util.List;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.x509.BasicConstraints;
-import org.bouncycastle.asn1.x509.GeneralName;
-import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.KeyPurposeId;
 import org.bouncycastle.asn1.x509.KeyUsage;
 
 import de.willuhn.jameica.ca.Plugin;
 import de.willuhn.jameica.system.Application;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.I18N;
 
@@ -85,17 +82,16 @@ public class EmailTemplate extends Template
       
       if (oid.equals(Attribute.CN))
       {
-        try
-        {
-          GeneralNames subjectAltName = new GeneralNames(new GeneralName(GeneralName.dNSName,value));
-          this.getExtensions().add(new Extension(org.bouncycastle.asn1.x509.Extension.subjectAlternativeName.getId(),false,subjectAltName.getEncoded()));
-          this.getAttributes().add(new Attribute(Attribute.EmailAddress,value));
-          return;
-        }
-        catch (Exception e)
-        {
-          Logger.error("unable to add subjectAltName",e);
-        }
+        // Mail-Adresse automatisch hinzufuegen
+        SubjectAltName an = new SubjectAltName();
+        an.setType(SubjectAltNameType.MAIL);
+        an.setValue(value);
+        this.getAltNames().add(an);
+
+        // Ausserdem noch das Attribut fuer die Mail-Adresse
+        this.getAttributes().add(new Attribute(Attribute.EmailAddress,value));
+        
+        break;
       }
     }
   }

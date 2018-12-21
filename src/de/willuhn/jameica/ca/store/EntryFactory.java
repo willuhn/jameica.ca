@@ -18,14 +18,18 @@ import java.security.Provider;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -41,6 +45,8 @@ import de.willuhn.io.IOUtil;
 import de.willuhn.jameica.ca.store.format.Format;
 import de.willuhn.jameica.ca.store.template.Attribute;
 import de.willuhn.jameica.ca.store.template.Extension;
+import de.willuhn.jameica.ca.store.template.SubjectAltName;
+import de.willuhn.jameica.ca.store.template.SubjectAltNameType;
 import de.willuhn.jameica.ca.store.template.Template;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ProgressMonitor;
@@ -112,6 +118,9 @@ public class EntryFactory
     {
       template.prepare();
       
+      if (monitor != null)
+        monitor.addPercentComplete(5);
+      
       Entry entry = new Entry();
       Entry issuer = template.getIssuer();
 
@@ -159,6 +168,7 @@ public class EntryFactory
       if (monitor != null) monitor.addPercentComplete(10);
       //////////////////////////////////////////////////////////////////////////
 
+      ////////////////////////////////////////////////////////////////////////////
       // Attribute
       final List<Attribute> attributes = template.getAttributes();
       X500NameBuilder nameBuilder = new X500NameBuilder();
@@ -170,6 +180,31 @@ public class EntryFactory
         
         nameBuilder.addRDN(new ASN1ObjectIdentifier(a.getOid()),value);
       }
+      //
+      ////////////////////////////////////////////////////////////////////////////
+      
+      ////////////////////////////////////////////////////////////////////////////
+      // Subject Alt Names
+      List<GeneralName> gn = new ArrayList<GeneralName>();
+      for (SubjectAltName name:template.getAltNames())
+      {
+        SubjectAltNameType type = name.getType();
+        String value = StringUtils.trimToNull(name.getValue());
+        
+        if (value == null || type == null)
+          continue;
+        
+        gn.add(new GeneralName(type.getId(),value));
+      }
+      
+      if (gn.size() > 0)
+      {
+        GeneralNames subjectAltName = new GeneralNames(gn.toArray(new GeneralName[gn.size()]));
+        template.getExtensions().add(new Extension(org.bouncycastle.asn1.x509.Extension.subjectAlternativeName.getId(),false,subjectAltName.getEncoded()));
+      }
+      //
+      ////////////////////////////////////////////////////////////////////////////
+
 
       // Subject
       X500Name subjectName = nameBuilder.build();

@@ -15,14 +15,11 @@ import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.misc.MiscObjectIdentifiers;
 import org.bouncycastle.asn1.misc.NetscapeCertType;
 import org.bouncycastle.asn1.x509.BasicConstraints;
-import org.bouncycastle.asn1.x509.GeneralName;
-import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.KeyPurposeId;
 import org.bouncycastle.asn1.x509.KeyUsage;
 
 import de.willuhn.jameica.ca.Plugin;
 import de.willuhn.jameica.system.Application;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.I18N;
 
@@ -91,16 +88,12 @@ public class WebserverTemplate extends Template
       
       if (oid.equals(Attribute.CN))
       {
-        try
-        {
-          GeneralNames subjectAltName = new GeneralNames(new GeneralName(GeneralName.dNSName,value));
-          this.getExtensions().add(new Extension(org.bouncycastle.asn1.x509.Extension.subjectAlternativeName.getId(),false,subjectAltName.getEncoded()));
-          return;
-        }
-        catch (Exception e)
-        {
-          Logger.error("unable to add subjectAltName",e);
-        }
+        // Hostname automatisch hinzufuegen
+        SubjectAltName an = new SubjectAltName();
+        an.setType(SubjectAltNameType.DNS);
+        an.setValue(value);
+        this.getAltNames().add(an);
+        break;
       }
     }
   }

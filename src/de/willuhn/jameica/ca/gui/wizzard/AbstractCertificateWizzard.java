@@ -13,18 +13,25 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 
 import de.willuhn.jameica.ca.Plugin;
 import de.willuhn.jameica.ca.gui.input.SelectIssuerInput;
+import de.willuhn.jameica.ca.gui.input.SubjectAltNameInput;
 import de.willuhn.jameica.ca.store.Entry;
 import de.willuhn.jameica.ca.store.template.Attribute;
+import de.willuhn.jameica.ca.store.template.SubjectAltName;
 import de.willuhn.jameica.ca.store.template.Template;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.ColumnLayout;
+import de.willuhn.jameica.gui.util.Container;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.util.ApplicationException;
@@ -53,6 +60,9 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
   private TextInput bc = null;
   private TextInput zip = null;
   private TextInput street = null;
+  
+  private Container altNameContainer = null;
+  private List<SubjectAltNameInput> altNames = null;
   
   /**
    * Liefert ein Eingabefeld fuer das Beginn-Datum der Gueltigkeit.
@@ -98,10 +108,12 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
     if (this.keySize == null)
     {
       List<Integer> values = new ArrayList<Integer>();
-      values.add(512);
-      values.add(768);
-      values.add(1024);
       values.add(2048);
+      values.add(3072);
+      values.add(4096);
+      values.add(5120);
+      values.add(6144);
+      values.add(8192);
       
       this.keySize = new SelectInput(values,Template.KEYSIZE_DEFAULT);
       this.keySize.setName(i18n.tr("Schlüssellänge"));
@@ -296,6 +308,41 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
     t.setMaxLength(255);
     return t;
   }
+  
+  /**
+   * Liefert die Liste der Eingabefelder mit den Alt-Names.
+   * @return Liste der Eingabefelder mit den Alt-Names.
+   */
+  private List<SubjectAltNameInput> getAltNames()
+  {
+    if (this.altNames != null)
+      return this.altNames;
+    
+    this.altNames = new ArrayList<SubjectAltNameInput>();
+    
+    final Listener l = new Listener() {
+      
+      @Override
+      public void handleEvent(Event event)
+      {
+        // Alle existierenden Buttons deaktivieren
+        for (SubjectAltNameInput i:altNames)
+        {
+          i.removeButton();
+        }
+        
+        // Neues Eingabefeld unten anhaengen
+        SubjectAltNameInput next = new SubjectAltNameInput(this);
+        altNames.add(next);
+        altNameContainer.addInput(next);
+        
+        Composite comp = altNameContainer.getComposite();
+        comp.layout();
+      }
+    };
+    this.altNames.add(new SubjectAltNameInput(l));
+    return this.altNames;
+  }
 
   /**
    * @see de.willuhn.jameica.ca.gui.wizzard.CertificateWizzard#create()
@@ -343,6 +390,18 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
     String bc = (String) getBC().getValue();
     if (bc != null && bc.length() > 0)
       attributes.add(new Attribute(Attribute.BC,bc));
+    
+    List<SubjectAltName> altNames = t.getAltNames();
+    for (SubjectAltNameInput i:this.getAltNames())
+    {
+      SubjectAltName n = (SubjectAltName) i.getValue();
+      
+      // Wenn kein Text eingegeben wurde, ueberspringen wir ihn
+      String s = StringUtils.trimToNull(n.getValue());
+      if (s == null)
+        continue;
+      altNames.add(n);
+    }
       
     return t;
   }
@@ -354,32 +413,38 @@ public abstract class AbstractCertificateWizzard implements CertificateWizzard, 
   {
     ColumnLayout columns = new ColumnLayout(parent,2);
 
-    SimpleContainer key = new SimpleContainer(columns.getComposite());
-    key.addHeadline(i18n.tr("Schlüssel und Aussteller"));
-    key.addInput(this.getIssuer());
-    key.addInput(this.getSignatureAlgorithm());
-    key.addInput(this.getKeySize());
+    SimpleContainer left = new SimpleContainer(columns.getComposite());
+    left.addHeadline(i18n.tr("Schlüssel und Aussteller"));
+    left.addInput(this.getIssuer());
+    left.addInput(this.getSignatureAlgorithm());
+    left.addInput(this.getKeySize());
 
-    SimpleContainer dates = new SimpleContainer(columns.getComposite());
-    dates.addHeadline(i18n.tr("Gültigkeit"));
-    dates.addInput(this.getValidFrom());
-    dates.addInput(this.getValidTo());
+    left.addHeadline(i18n.tr("Gültigkeit"));
+    left.addInput(this.getValidFrom());
+    left.addInput(this.getValidTo());
+
+    SimpleContainer right = new SimpleContainer(columns.getComposite());
+    right.addHeadline(i18n.tr("Adresse"));
+    right.addInput(this.getL());
+    right.addInput(this.getZip());
+    right.addInput(this.getStreet());
+    right.addInput(this.getST());
+    right.addInput(this.getC());
 
     SimpleContainer container = new SimpleContainer(parent);
     container.addHeadline(i18n.tr("Eigenschaften des Zertifikates"));
-
     container.addInput(this.getCN());
     container.addInput(this.getO());
     container.addInput(this.getOU());
     container.addInput(this.getBC());
     
-    container.addHeadline(i18n.tr("Adresse"));
-    container.addInput(this.getL());
-    container.addInput(this.getZip());
-    container.addInput(this.getStreet());
-    container.addInput(this.getST());
-    container.addInput(this.getC());
-
+    this.altNameContainer = new SimpleContainer(parent,true);
+    this.altNameContainer.addHeadline(i18n.tr("Alternative Namen (Subject Alt Names)"));
+    this.altNameContainer.addText(i18n.tr("Hinweis: Der Common-Name (Hostname bei Webserver-Zertifikaten bzw. Mail-Adresse bei S/MIME-Zertifikaten) wird automatisch als alternativer Name hinzugefügt und muss hier nicht separat erfasst werden."),true, Color.COMMENT);
+    for (SubjectAltNameInput input:this.getAltNames())
+    {
+      this.altNameContainer.addInput(input);
+    }
   }
 
   /**

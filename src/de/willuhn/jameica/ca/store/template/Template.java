@@ -28,22 +28,23 @@ public class Template implements Serializable
   /**
    * Default-Schluessellaenge.
    */
-  public final static int KEYSIZE_DEFAULT = 2048;
+  public final static int KEYSIZE_DEFAULT = 4096;
   
   /**
    * Default-Signatur-Algorithmus.
    */
   public final static String SIGNATUREALG_DEFAULT = "SHA256WithRSAEncryption";
   
-  private int keysize                = KEYSIZE_DEFAULT;
-  private String signatureAlg        = SIGNATUREALG_DEFAULT;
+  private int keysize                   = KEYSIZE_DEFAULT;
+  private String signatureAlg           = SIGNATUREALG_DEFAULT;
   
-  private List<Attribute> attributes = new ArrayList<Attribute>();
-  private List<Extension> extensions = new ArrayList<Extension>();
-  private Entry issuer               = null;
+  private List<Attribute> attributes    = new ArrayList<Attribute>();
+  private List<Extension> extensions    = new ArrayList<Extension>();
+  private List<SubjectAltName> altNames = new ArrayList<SubjectAltName>();
+  private Entry issuer                  = null;
   
-  private Date validFrom             = new Date();
-  private Date validTo               = new Date(System.currentTimeMillis() + (1000l*60*60*24*365*2)); // per Default ~2 Jahre
+  private Date validFrom                = new Date();
+  private Date validTo                  = new Date(System.currentTimeMillis() + (1000l*60*60*24*365*2)); // per Default ~2 Jahre
   
   
   /**
@@ -73,6 +74,16 @@ public class Template implements Serializable
   public List<Attribute> getAttributes()
   {
     return this.attributes;
+  }
+  
+  /**
+   * Liefert die Liste der alternativen Namen.
+   * @return die Liste der alternativen Namen.
+   * Default: Keine.
+   */
+  public List<SubjectAltName> getAltNames()
+  {
+    return this.altNames;
   }
   
   /**
