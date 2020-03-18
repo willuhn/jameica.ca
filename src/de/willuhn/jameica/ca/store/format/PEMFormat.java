@@ -8,6 +8,7 @@
 package de.willuhn.jameica.ca.store.format;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,9 +17,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.security.KeyPair;
 import java.security.PrivateKey;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMDecryptorProvider;
 import org.bouncycastle.openssl.PEMEncryptedKeyPair;
@@ -60,7 +63,11 @@ public class PEMFormat implements Format
       try
       {
         reader = new PEMParser(new InputStreamReader(new BufferedInputStream(new FileInputStream(cert))));
-        e.setCertificate((X509Certificate) reader.readObject());
+        X509CertificateHolder holder = (X509CertificateHolder) reader.readObject();
+        
+        CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+        X509Certificate c = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(holder.getEncoded()));
+        e.setCertificate(c);
       }
       finally
       {
